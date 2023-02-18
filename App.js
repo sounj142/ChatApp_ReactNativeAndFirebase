@@ -1,9 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { useCallback, useEffect, useState } from 'react';
+import AppNavigator from './navigators/AppNavigator';
+import { View } from 'react-native';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -43,24 +43,9 @@ export default function App() {
   if (!appIsReady) return null;
 
   return (
-    <SafeAreaProvider style={styles.container} onLayout={onLayoutRootView}>
-      <SafeAreaView>
-        <StatusBar style='dark' />
-        <Text style={styles.label}>Hello me cong hoa!</Text>
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <StatusBar style='dark' />
+      <AppNavigator />
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  label: {
-    fontSize: 18,
-    fontFamily: 'regular',
-  },
-});
