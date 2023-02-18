@@ -1,14 +1,11 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
-import { Screen } from '../utils/constants';
+import { Screens } from '../utils/constants';
 
 export default function ChatListScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Hello me cong hoa!</Text>
-      <Button
-        title='Chat Settings'
-        onPress={() => navigation.navigate(Screen.ChatSettings)}
-      />
+      <Text style={styles.label}>Chat list home</Text>
+      <Button title='Chat' onPress={() => navigation.navigate(Screens.Chat)} />
     </View>
   );
 }

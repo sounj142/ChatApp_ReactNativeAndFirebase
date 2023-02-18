@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { Screen } from '../utils/constants';
+import { Screens } from '../utils/constants';
 import ChatListScreen from '../screens/ChatListScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
@@ -11,7 +11,7 @@ export default function BottomTabNavigator({}) {
   return (
     <Tab.Navigator>
       <Tab.Screen
-        name={Screen.ChatList}
+        name={Screens.ChatList}
         component={ChatListScreen}
         options={{
           headerTitle: 'Home',
@@ -22,7 +22,7 @@ export default function BottomTabNavigator({}) {
         }}
       />
       <Tab.Screen
-        name={Screen.Settings}
+        name={Screens.Settings}
         component={SettingsScreen}
         options={{
           headerTitle: 'Settings',

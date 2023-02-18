@@ -1,8 +1,9 @@
 import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Screen } from '../utils/constants';
+import { Screens } from '../utils/constants';
 import ChatSettingsScreen from '../screens/ChatSettingsScreen';
 import BottomTabNavigator from './BottomTabNavigator';
+import ChatScreen from '../screens/ChatScreen';
 
 const Stack = createStackNavigator();
 
@@ -14,7 +15,7 @@ export default function MainNavigator({}) {
       }}
     >
       <Stack.Screen
-        name={Screen.Home}
+        name={Screens.Home}
         component={BottomTabNavigator}
         options={{
           headerShown: false,
@@ -22,7 +23,15 @@ export default function MainNavigator({}) {
       />
 
       <Stack.Screen
-        name={Screen.ChatSettings}
+        name={Screens.Chat}
+        component={ChatScreen}
+        options={{
+          headerTitle: '',
+        }}
+      />
+
+      <Stack.Screen
+        name={Screens.ChatSettings}
         component={ChatSettingsScreen}
         options={{
           headerTitle: 'Settings',
