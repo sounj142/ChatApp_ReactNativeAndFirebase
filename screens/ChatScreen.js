@@ -6,7 +6,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import IconButton from '../components/UI/IconButton';
+import MyKeyboardAvoidingView from '../components/UI/MyKeyboardAvoidingView';
 import { Colors } from '../utils/constants';
 import { IS_IOS } from '../utils/system';
 
@@ -23,12 +25,8 @@ export default function ChatScreen({ navigation }) {
   }, [messageText]);
 
   return (
-    <View style={styles.flex1}>
-      <KeyboardAvoidingView
-        style={styles.flex1}
-        behavior={IS_IOS ? 'padding' : undefined}
-        keyboardVerticalOffset={100}
-      >
+    <SafeAreaView edges={['right', 'left', 'bottom']} style={styles.flex1}>
+      <MyKeyboardAvoidingView>
         <ImageBackground
           source={require('../assets/images/droplet.jpeg')}
           style={styles.flex1}
@@ -70,8 +68,8 @@ export default function ChatScreen({ navigation }) {
             />
           )}
         </View>
-      </KeyboardAvoidingView>
-    </View>
+      </MyKeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
