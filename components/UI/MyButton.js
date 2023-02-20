@@ -25,7 +25,7 @@ export default function MyButton({
           {children}
         </Text>
       )}
-      {isLoading && <ActivityIndicator size={16} color={Colors.nearlyWhite} />}
+      {isLoading && <ActivityIndicator size={21} color={Colors.nearlyWhite} />}
     </Pressable>
   );
 }

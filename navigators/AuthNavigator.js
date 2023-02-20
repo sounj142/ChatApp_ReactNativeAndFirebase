@@ -13,7 +13,11 @@ export default function AuthNavigator({}) {
         headerShown: false,
       }}
     >
-      <Stack.Screen name={Screens.LogIn} component={LogInScreen} />
+      <Stack.Screen
+        name={Screens.LogIn}
+        component={LogInScreen}
+        options={{ freezeOnBlur: false }}
+      />
       <Stack.Screen name={Screens.SignUp} component={SignUpScreen} />
     </Stack.Navigator>
   );

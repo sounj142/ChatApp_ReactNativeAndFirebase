@@ -1,37 +1,26 @@
-import { StyleSheet } from 'react-native';
-import Input from '../components/UI/Input';
+import LogInForm from '../components/Auth/LogInForm';
 import Logo from '../components/UI/Logo';
-import MyButton from '../components/UI/MyButton';
 import MyKeyboardAvoidingView from '../components/UI/MyKeyboardAvoidingView';
 import PageContainer from '../components/UI/PageContainer';
-import TextLink from '../components/UI/TextLink';
-import { Screens } from '../utils/constants';
 
-export default function LogInScreen({ navigation }) {
-  function logInHandler() {}
+export default function LogInScreen() {
+  function logInHandler(data) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log(data);
+        resolve();
+      }, 1000);
+    });
+  }
+
+  console.log('LogInScreen');
 
   return (
     <PageContainer>
       <MyKeyboardAvoidingView>
         <Logo />
-
-        <Input label='Email' icon='md-mail-outline' />
-        <Input label='Password' icon='lock-closed-outline' isPassword={true} />
-
-        <MyButton onPress={logInHandler} style={styles.logIn}>
-          Log In
-        </MyButton>
-
-        <TextLink onPress={() => navigation.navigate(Screens.SignUp)}>
-          Switch to sign up
-        </TextLink>
+        <LogInForm onSubmit={logInHandler} />
       </MyKeyboardAvoidingView>
     </PageContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  logIn: {
-    marginTop: 20,
-  },
-});

@@ -5,7 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 export default function Input({
   label,
   icon,
-  isPassword,
+  secureTextEntry,
+  autoCapitalize,
+  keyboardType,
   value,
   onChangeText,
   onBlur,
@@ -26,10 +28,12 @@ export default function Input({
         <TextInput
           style={styles.textInput}
           value={value}
-          secureTextEntry={!!isPassword}
+          secureTextEntry={secureTextEntry}
+          autoCapitalize={autoCapitalize}
           onChangeText={onChangeText}
           onBlur={onBlur}
           onSubmitEditing={onSubmitEditing}
+          keyboardType={keyboardType}
         />
       </View>
 
