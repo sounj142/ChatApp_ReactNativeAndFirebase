@@ -20,12 +20,13 @@ export default function MyButton({
       disabled={disabled}
       onPress={onPress}
     >
-      {!isLoading && (
+      {isLoading ? (
+        <ActivityIndicator size={21} color={Colors.blue} />
+      ) : (
         <Text style={[styles.text, disabled && styles.textDisabled, textStyle]}>
           {children}
         </Text>
       )}
-      {isLoading && <ActivityIndicator size={21} color={Colors.nearlyWhite} />}
     </Pressable>
   );
 }
