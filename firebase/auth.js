@@ -52,9 +52,9 @@ async function createUserInRealtimeDatabase(
     fullNameLowerCase: `${firstName} ${lastName}`.toLowerCase(),
     createdDate: new Date().toISOString(),
   };
-  const dbRef = ref(getDatabase());
-  const childRef = child(dbRef, `users/${userId}`);
-  await set(childRef, userData);
+  const dbRef = ref(getDatabase(app));
+  const userRef = child(dbRef, `users/${userId}`);
+  await set(userRef, userData);
   return userData;
 }
 
@@ -62,8 +62,7 @@ export async function logIn({ email, password }) {
   const auth = getAuth(app);
   try {
     const result = await signInWithEmailAndPassword(auth, email, password);
-    const user = result.user;
-    const userData = await getUserInRealtimeDatabase(user.uid);
+    const userData = await getUserInRealtimeDatabase(result.user.uid);
     return {
       succeed: true,
       userData: userData,
@@ -87,9 +86,9 @@ export async function logIn({ email, password }) {
 }
 
 async function getUserInRealtimeDatabase(userId) {
-  const dbRef = ref(getDatabase());
-  const childRef = child(dbRef, `users/${userId}`);
-  return (await get(childRef))?.val();
+  const dbRef = ref(getDatabase(app));
+  const userRef = child(dbRef, `users/${userId}`);
+  return (await get(userRef))?.val();
 }
 
 export async function loadCurrentUser() {

@@ -1,14 +1,14 @@
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { logOut } from '../firebase/auth';
-import { authenticate } from '../store/authSlice';
+import { logOut as logOutAction } from '../store/authSlice';
 import { Screens } from '../utils/constants';
 
 export default function ChatListScreen({ navigation }) {
   const dispatch = useDispatch();
   async function logOutHandler() {
     await logOut();
-    dispatch(authenticate({ userData: null }));
+    dispatch(logOutAction());
   }
 
   return (
