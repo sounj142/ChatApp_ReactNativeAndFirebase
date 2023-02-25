@@ -10,7 +10,9 @@ export default function PageContainer({ children, style, ignoreTop, isView }) {
       {isView ? (
         <View style={[styles.container, style]}>{children}</View>
       ) : (
-        <ScrollView style={[styles.container, style]}>{children}</ScrollView>
+        <ScrollView contentContainerStyle={[styles.container, style]}>
+          {children}
+        </ScrollView>
       )}
     </SafeAreaView>
   );

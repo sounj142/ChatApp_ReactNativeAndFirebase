@@ -4,7 +4,7 @@ import { Formik } from 'formik';
 import Input from '../UI/Input';
 import MyButton from '../UI/MyButton';
 import { useCallback, useEffect, useState } from 'react';
-import ProfileImage from './ProfileImage';
+import SettingsProfileImage from './SettingsProfileImage';
 
 const validationSchema = Yup.object({
   firstName: Yup.string().required('First name is required.'),
@@ -52,7 +52,7 @@ export default function SettingsForm({ userData, onSubmit }) {
         isSubmitting,
       }) => (
         <>
-          <ProfileImage size={100} image={image} setImage={setImage} />
+          <SettingsProfileImage size={100} image={image} setImage={setImage} />
 
           <Input
             label='First Name'

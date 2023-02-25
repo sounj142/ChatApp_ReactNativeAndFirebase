@@ -9,7 +9,11 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
 } from 'firebase/auth';
-import { child, getDatabase, ref, set, get, update } from 'firebase/database';
+import {
+  createUserInRealtimeDatabase,
+  updateUserInRealtimeDatabase,
+  getUserInRealtimeDatabase,
+} from './user';
 import { deleteImageAsync, uploadImageAsync } from './storage';
 
 export async function signUp({ email, password, firstName, lastName }) {
@@ -40,30 +44,6 @@ export async function signUp({ email, password, firstName, lastName }) {
       errorMessage: errorMsg,
     };
   }
-}
-
-function getFullNameLowerCase(firstName, lastName) {
-  return `${firstName} ${lastName}`.toLowerCase();
-}
-
-async function createUserInRealtimeDatabase(
-  userId,
-  email,
-  firstName,
-  lastName
-) {
-  const userData = {
-    userId,
-    email,
-    firstName,
-    lastName,
-    fullNameLowerCase: getFullNameLowerCase(firstName, lastName),
-    createdDate: new Date().toISOString(),
-  };
-  const dbRef = ref(getDatabase(app));
-  const userRef = child(dbRef, `users/${userId}`);
-  await set(userRef, userData);
-  return userData;
 }
 
 export async function updateUser(userData, oldUserData) {
@@ -114,23 +94,6 @@ export async function updateUser(userData, oldUserData) {
   }
 }
 
-async function updateUserInRealtimeDatabase(userData) {
-  const dbRef = ref(getDatabase(app));
-  const userRef = child(dbRef, `users/${userData.userId}`);
-  await update(userRef, {
-    email: userData.email,
-    firstName: userData.firstName,
-    lastName: userData.lastName,
-    fullNameLowerCase: getFullNameLowerCase(
-      userData.firstName,
-      userData.lastName
-    ),
-    about: userData.about,
-    imageUri: userData.imageUri,
-  });
-  return userData;
-}
-
 export async function logIn({ email, password }) {
   const auth = getAuth(app);
   try {
@@ -156,12 +119,6 @@ export async function logIn({ email, password }) {
       errorMessage: errorMsg,
     };
   }
-}
-
-async function getUserInRealtimeDatabase(userId) {
-  const dbRef = ref(getDatabase(app));
-  const userRef = child(dbRef, `users/${userId}`);
-  return (await get(userRef))?.val();
 }
 
 export async function loadCurrentUser() {

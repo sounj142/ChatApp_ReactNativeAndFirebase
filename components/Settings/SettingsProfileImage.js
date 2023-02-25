@@ -8,11 +8,11 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 
 import defaultImage from '../../assets/images/userImage.jpeg';
+import { useState } from 'react';
 import { Colors } from '../../utils/constants';
 import { launchImagePicker } from '../../utils/imagePickerHelper';
-import { useState } from 'react';
 
-export default function ProfileImage({ size, image, setImage }) {
+export default function SettingsProfileImage({ size, image, setImage }) {
   const [loading, setLoading] = useState(false);
 
   async function editImageHandler() {

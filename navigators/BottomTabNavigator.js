@@ -1,4 +1,3 @@
-import 'react-native-gesture-handler';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { Screens } from '../utils/constants';
@@ -12,7 +11,7 @@ export default function BottomTabNavigator({}) {
     <Tab.Navigator
       screenOptions={{
         headerTitle: '',
-        headerShadowVisible: false,
+        headerShadowVisible: true,
       }}
     >
       <Tab.Screen
