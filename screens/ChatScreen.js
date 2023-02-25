@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import {
   ImageBackground,
-  KeyboardAvoidingView,
   StyleSheet,
   TextInput,
   View,
@@ -10,7 +9,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import IconButton from '../components/UI/IconButton';
 import MyKeyboardAvoidingView from '../components/UI/MyKeyboardAvoidingView';
 import { Colors } from '../utils/constants';
-import { IS_IOS } from '../utils/system';
 
 export default function ChatScreen({ navigation }) {
   const [messageText, setMessageText] = useState('');

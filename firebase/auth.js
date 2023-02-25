@@ -5,8 +5,12 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  updateEmail,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
 } from 'firebase/auth';
-import { child, getDatabase, ref, set, get } from 'firebase/database';
+import { child, getDatabase, ref, set, get, update } from 'firebase/database';
+import { deleteImageAsync, uploadImageAsync } from './storage';
 
 export async function signUp({ email, password, firstName, lastName }) {
   const auth = getAuth(app);
@@ -26,16 +30,20 @@ export async function signUp({ email, password, firstName, lastName }) {
   } catch (err) {
     let errorMsg;
     if (err.code === 'auth/email-already-in-use') {
-      errorMsg = 'This email is already in use.';
+      errorMsg = 'Email is already in use.';
     } else {
       errorMsg = 'Something went wrong.';
-      console.warn({ ...err });
+      console.warn({ ...err, message: err.message });
     }
     return {
       succeed: false,
       errorMessage: errorMsg,
     };
   }
+}
+
+function getFullNameLowerCase(firstName, lastName) {
+  return `${firstName} ${lastName}`.toLowerCase();
 }
 
 async function createUserInRealtimeDatabase(
@@ -49,12 +57,77 @@ async function createUserInRealtimeDatabase(
     email,
     firstName,
     lastName,
-    fullNameLowerCase: `${firstName} ${lastName}`.toLowerCase(),
+    fullNameLowerCase: getFullNameLowerCase(firstName, lastName),
     createdDate: new Date().toISOString(),
   };
   const dbRef = ref(getDatabase(app));
   const userRef = child(dbRef, `users/${userId}`);
   await set(userRef, userData);
+  return userData;
+}
+
+export async function updateUser(userData, oldUserData) {
+  const auth = getAuth(app);
+  const currentUser = auth.currentUser;
+  try {
+    if (userData.email !== currentUser.email) {
+      const credential = EmailAuthProvider.credential(
+        currentUser.email,
+        userData.password
+      );
+      await reauthenticateWithCredential(currentUser, credential);
+      await updateEmail(currentUser, userData.email);
+    }
+
+    const uploadNewImage = userData.imageUri !== oldUserData.imageUri;
+    if (uploadNewImage) {
+      userData.imageUri = await uploadImageAsync(userData.imageUri);
+    }
+
+    await updateUserInRealtimeDatabase(userData);
+    const updatedUserData = await getUserInRealtimeDatabase(userData.userId);
+
+    if (uploadNewImage) {
+      await deleteImageAsync(oldUserData.imageUri);
+    }
+    return {
+      succeed: true,
+      userData: updatedUserData,
+    };
+  } catch (err) {
+    let errorMsg;
+    if (
+      err.code === 'auth/user-not-found' ||
+      err.code === 'auth/wrong-password'
+    ) {
+      errorMsg = 'Invalid email or password.';
+    } else if (err.code === 'auth/email-already-in-use') {
+      errorMsg = 'Email is already in use.';
+    } else {
+      errorMsg = 'Something went wrong.';
+      console.warn({ ...err, message: err.message });
+    }
+    return {
+      succeed: false,
+      errorMessage: errorMsg,
+    };
+  }
+}
+
+async function updateUserInRealtimeDatabase(userData) {
+  const dbRef = ref(getDatabase(app));
+  const userRef = child(dbRef, `users/${userData.userId}`);
+  await update(userRef, {
+    email: userData.email,
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    fullNameLowerCase: getFullNameLowerCase(
+      userData.firstName,
+      userData.lastName
+    ),
+    about: userData.about,
+    imageUri: userData.imageUri,
+  });
   return userData;
 }
 
@@ -76,7 +149,7 @@ export async function logIn({ email, password }) {
       errorMsg = 'Invalid email or password.';
     } else {
       errorMsg = 'Something went wrong.';
-      console.warn({ ...err });
+      console.warn({ ...err, message: err.message });
     }
     return {
       succeed: false,
