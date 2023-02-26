@@ -4,11 +4,16 @@ import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { useEffect, useLayoutEffect, useState } from 'react';
 import IoniconsHeaderButton from '../components/UI/IoniconsHeaderButton';
 import PageContainer from '../components/UI/PageContainer';
-import { Colors } from '../utils/constants';
+import { Colors, Screens } from '../utils/constants';
 import { searchUsers } from '../firebase/user';
 import ChatListContent from '../components/ChatList/ChatListContent';
+import { useDispatch, useSelector } from 'react-redux';
+import { setStoredUsers } from '../store/usersSlice';
 
 export default function NewChatScreen({ navigation }) {
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.auth.userData);
+
   const [isLoading, setIsLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [users, setUsers] = useState(null);
@@ -22,6 +27,12 @@ export default function NewChatScreen({ navigation }) {
       setIsLoading(true);
 
       const usersResult = await searchUsers(searchText);
+      dispatch(setStoredUsers({ ...usersResult }));
+
+      if (usersResult) {
+        delete usersResult[userData.userId];
+        if (!Object.keys(usersResult).length) usersResult = null;
+      }
       setUsers(usersResult);
       setIsLoading(false);
     }, 300);
@@ -37,6 +48,10 @@ export default function NewChatScreen({ navigation }) {
       ),
     });
   }, [navigation]);
+
+  function userSelectedHandler(user) {
+    navigation.navigate(Screens.Chat, { selectedUser: user });
+  }
 
   return (
     <PageContainer ignoreTop isView>
@@ -60,6 +75,7 @@ export default function NewChatScreen({ navigation }) {
         searchText={searchText}
         users={users}
         isLoading={isLoading}
+        onUserSelected={userSelectedHandler}
       />
     </PageContainer>
   );

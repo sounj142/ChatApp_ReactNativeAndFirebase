@@ -1,26 +1,40 @@
-import { useCallback, useState } from 'react';
-import {
-  ImageBackground,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { useCallback, useLayoutEffect, useState } from 'react';
+import { ImageBackground, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
+import Bubble from '../components/Chat/Bubble';
 import IconButton from '../components/UI/IconButton';
 import MyKeyboardAvoidingView from '../components/UI/MyKeyboardAvoidingView';
+import { createChat } from '../firebase/chat';
 import { Colors } from '../utils/constants';
 
-export default function ChatScreen({ navigation }) {
+export default function ChatScreen({ navigation, route }) {
+  const { selectedUser, chatId: chatIdInput } = route.params;
+  const userData = useSelector((state) => state.auth.userData);
+
   const [messageText, setMessageText] = useState('');
+  const [chatId, setChatId] = useState(chatIdInput);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: `${selectedUser.firstName} ${selectedUser.lastName}`,
+    });
+  }, [navigation, selectedUser]);
 
   function imageButtonHandler() {
     console.log('image clicked');
   }
 
-  const sendMessageHandler = useCallback(() => {
-    console.log('send message clicked', messageText);
+  const sendMessageHandler = useCallback(async () => {
+    if (!chatId) {
+      // no chat id, create new chat
+      const newChatId = await createChat(userData.userId, {
+        users: [userData.userId, selectedUser.userId],
+      });
+      setChatId(newChatId);
+    }
     setMessageText('');
-  }, [messageText]);
+  }, [chatId, messageText]);
 
   return (
     <SafeAreaView edges={['right', 'left', 'bottom']} style={styles.flex1}>
@@ -28,7 +42,11 @@ export default function ChatScreen({ navigation }) {
         <ImageBackground
           source={require('../assets/images/droplet.jpeg')}
           style={styles.flex1}
-        />
+        >
+          {!chatId && (
+            <Bubble text='This is a new chat. Say hi!' type='system' />
+          )}
+        </ImageBackground>
 
         <View style={styles.inputContainer}>
           <IconButton

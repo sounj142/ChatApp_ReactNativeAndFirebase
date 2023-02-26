@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { useLayoutEffect } from 'react';
 import { Screens } from '../utils/constants';
@@ -22,7 +22,6 @@ export default function ChatListScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Chat list home</Text>
-      <Button title='Chat' onPress={() => navigation.navigate(Screens.Chat)} />
     </View>
   );
 }

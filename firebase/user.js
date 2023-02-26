@@ -79,3 +79,13 @@ export async function searchUsers(searchText) {
     throw error;
   }
 }
+
+// export async function observeUserChange(userId) {
+//   const dbRef = ref(getDatabase(app));
+//   const userRef = child(dbRef, `users/${userId}`);
+
+//   onValue(userRef, (snapshot) => {
+//     const data = snapshot.val();
+//     console.log('user data changed!', data);
+//   });
+// }

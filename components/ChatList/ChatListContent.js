@@ -10,7 +10,12 @@ import { Octicons } from '@expo/vector-icons';
 import { Colors } from '../../utils/constants';
 import DataItem from '../UI/DataItem';
 
-export default function ChatListContent({ searchText, isLoading, users }) {
+export default function ChatListContent({
+  searchText,
+  isLoading,
+  users,
+  onUserSelected,
+}) {
   if (!searchText)
     return (
       <View style={styles.center}>
@@ -58,6 +63,7 @@ export default function ChatListContent({ searchText, isLoading, users }) {
             title={`${user.firstName} ${user.lastName}`}
             subTitle={user.about}
             imageUri={user.imageUri}
+            onPress={() => onUserSelected({ ...user })}
           />
         );
       }}
