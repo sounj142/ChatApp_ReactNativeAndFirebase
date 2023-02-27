@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { subscribeToChat, subscribeToUserChats } from '../firebase/chat';
+import { observeUserChange } from '../firebase/user';
 import StartUpScreen from '../screens/StartUpScreen';
 import { clearAllChatsState } from '../store/chatsSlice';
 import StackNavigator from './StackNavigator';
@@ -17,10 +18,7 @@ export default function MainNavigator() {
 
   useEffect(() => {
     console.log('Subscribing to firebase listeners...');
-    const unsubscribeUserChats = subscribeToUserChats(
-      userData.userId,
-      dispatch
-    );
+    const unsubscribeUserChats = subscribeToUserChats(userData.userId);
     return () => {
       console.log('Unsubscribing firebase listeners...');
       unsubscribeUserChats();
@@ -36,7 +34,7 @@ export default function MainNavigator() {
     // add new chat chanels
     for (const newChatId of chatIds) {
       if (!chatUnsubscribes[newChatId]) {
-        const unsubscribe = subscribeToChat(newChatId, dispatch);
+        const unsubscribe = subscribeToChat(newChatId);
         chatUnsubscribes[newChatId] = unsubscribe;
       }
     }
@@ -47,6 +45,12 @@ export default function MainNavigator() {
     return () => {
       dispatch(clearAllChatsState());
     };
+  }, []);
+
+  // watch all change on userData
+  useEffect(() => {
+    const unsubscribe = observeUserChange(userData.userId);
+    return unsubscribe;
   }, []);
 
   if (isFirstLoadingChats) return <StartUpScreen />;

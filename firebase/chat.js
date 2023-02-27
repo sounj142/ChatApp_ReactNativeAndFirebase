@@ -23,24 +23,24 @@ export async function createChat(loggedInUserId, { users }) {
   return newChat.key;
 }
 
-export function subscribeToUserChats(userId, dispatch) {
+export function subscribeToUserChats(userId) {
   const dbRef = ref(getDatabase(app));
   const userChatRef = child(dbRef, `userChats/${userId}`);
 
   return onValue(userChatRef, (querySnapshot) => {
     const chatIds = Object.values(querySnapshot.val() || {});
-    dispatch(setChatIds(chatIds));
+    store.dispatch(setChatIds(chatIds));
   });
 }
 
-export function subscribeToChat(chatId, dispatch) {
+export function subscribeToChat(chatId) {
   const dbRef = ref(getDatabase(app));
   const chatRef = child(dbRef, `chats/${chatId}`);
 
   return onValue(chatRef, (chatSnapshot) => {
     const chatData = chatSnapshot.val();
     chatData.chatId = chatSnapshot.key;
-    dispatch(setChatsData(chatData));
+    store.dispatch(setChatsData(chatData));
 
     // get users data
     chatData.users.forEach(async (userId) => {
@@ -50,7 +50,7 @@ export function subscribeToChat(chatId, dispatch) {
       const userRef = child(dbRef, `users/${userId}`);
       const userSnapshot = await get(userRef);
       const user = userSnapshot.val();
-      dispatch(setStoredUsers({ [userId]: user }));
+      store.dispatch(setStoredUsers({ [userId]: user }));
     });
   });
 }

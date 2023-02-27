@@ -65,14 +65,12 @@ export async function updateUser(userData, oldUserData) {
     }
 
     await updateUserInRealtimeDatabase(userData);
-    const updatedUserData = await getUserInRealtimeDatabase(userData.userId);
 
     if (uploadNewImage && oldUserData.imageUri) {
       await deleteImageAsync(oldUserData.imageUri);
     }
     return {
       succeed: true,
-      userData: updatedUserData,
     };
   } catch (err) {
     let errorMsg;

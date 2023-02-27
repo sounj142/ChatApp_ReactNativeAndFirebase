@@ -1,18 +1,16 @@
 import { Alert } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import SettingsForm from '../components/Settings/SettingsForm';
 import ConfirmPasswordDialog from '../components/Settings/ConfirmPasswordDialog';
 import PageContainer from '../components/UI/PageContainer';
 import { useEffect, useState } from 'react';
 import { updateUser } from '../firebase/auth';
-import { authenticate } from '../store/authSlice';
 import SettingsTitle from '../components/Settings/SettingsTitle';
 
 let tempFormData;
 let promiseResolve;
 
 export default function SettingsScreen() {
-  const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
   const [showConfirmPasswordDialog, setShowConfirmPasswordDialog] =
     useState(false);
@@ -31,7 +29,6 @@ export default function SettingsScreen() {
       Alert.alert('An error occurred', res.errorMessage);
       return false;
     }
-    dispatch(authenticate({ userData: res.userData }));
     return true;
   }
 

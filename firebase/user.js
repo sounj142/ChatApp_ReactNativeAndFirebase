@@ -10,7 +10,10 @@ import {
   orderByChild,
   startAt,
   endAt,
+  onValue,
 } from 'firebase/database';
+import { store } from '../store/store';
+import { authenticate } from '../store/authSlice';
 
 function getFullNameLowerCase(firstName, lastName) {
   return `${firstName} ${lastName}`.toLowerCase();
@@ -89,12 +92,12 @@ export async function getUsersByIds(userIds) {
   return users;
 }
 
-// export async function observeUserChange(userId) {
-//   const dbRef = ref(getDatabase(app));
-//   const userRef = child(dbRef, `users/${userId}`);
+export function observeUserChange(userId) {
+  const dbRef = ref(getDatabase(app));
+  const userRef = child(dbRef, `users/${userId}`);
 
-//   onValue(userRef, (snapshot) => {
-//     const data = snapshot.val();
-//     console.log('user data changed!', data);
-//   });
-// }
+  return onValue(userRef, (snapshot) => {
+    const userData = snapshot.val();
+    store.dispatch(authenticate({ userData: userData }));
+  });
+}
