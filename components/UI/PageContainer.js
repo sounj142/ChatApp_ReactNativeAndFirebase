@@ -10,7 +10,7 @@ export default function PageContainer({ children, style, ignoreTop, isView }) {
       {isView ? (
         <View style={[styles.container, style]}>{children}</View>
       ) : (
-        <ScrollView contentContainerStyle={[styles.container, style]}>
+        <ScrollView style={[styles.scrollContainer, style]}>
           {children}
         </ScrollView>
       )}
@@ -24,6 +24,10 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    paddingHorizontal: 20,
+    backgroundColor: 'white',
+  },
+  scrollContainer: {
     paddingHorizontal: 20,
     backgroundColor: 'white',
   },

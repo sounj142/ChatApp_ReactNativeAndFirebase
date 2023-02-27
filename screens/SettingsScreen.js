@@ -6,6 +6,7 @@ import PageContainer from '../components/UI/PageContainer';
 import { useEffect, useState } from 'react';
 import { updateUser } from '../firebase/auth';
 import SettingsTitle from '../components/Settings/SettingsTitle';
+import MyKeyboardAvoidingView from '../components/UI/MyKeyboardAvoidingView';
 
 let tempFormData;
 let promiseResolve;
@@ -56,14 +57,16 @@ export default function SettingsScreen() {
 
   return (
     <PageContainer ignoreTop>
-      <ConfirmPasswordDialog
-        visible={showConfirmPasswordDialog}
-        onCancel={cancelPasswordHandler}
-        onOk={confirmPasswordHandler}
-      />
-      <SettingsTitle />
+      <MyKeyboardAvoidingView>
+        <ConfirmPasswordDialog
+          visible={showConfirmPasswordDialog}
+          onCancel={cancelPasswordHandler}
+          onOk={confirmPasswordHandler}
+        />
+        <SettingsTitle />
 
-      <SettingsForm onSubmit={saveSetingsHandler} userData={userData} />
+        <SettingsForm onSubmit={saveSetingsHandler} userData={userData} />
+      </MyKeyboardAvoidingView>
     </PageContainer>
   );
 }
