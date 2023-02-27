@@ -5,13 +5,14 @@ import { useSelector } from 'react-redux';
 import Bubble from '../components/Chat/Bubble';
 import ChatInput from '../components/Chat/ChatInput';
 import MyKeyboardAvoidingView from '../components/UI/MyKeyboardAvoidingView';
-import { createChat } from '../firebase/chat';
+import { createChat, sendTextMessage } from '../firebase/chat';
 
 export default function ChatScreen({ navigation, route }) {
   const { selectedUser, chatId: inputChatId } = route.params;
   const userData = useSelector((state) => state.auth.userData);
   const chatsData = useSelector((state) => state.chats.chatsData);
   const [chatId, setChatId] = useState(inputChatId || null);
+  const chatMessages = useSelector((state) => state.messages.messagesData);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -39,6 +40,8 @@ export default function ChatScreen({ navigation, route }) {
         });
         setChatId(currentChatId);
       }
+
+      await sendTextMessage(currentChatId, userData.userId, messageText);
     },
     [chatId, chatsData, selectedUser.userId]
   );

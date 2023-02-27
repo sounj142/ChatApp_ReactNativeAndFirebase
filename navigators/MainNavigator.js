@@ -1,9 +1,14 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { subscribeToChat, subscribeToUserChats } from '../firebase/chat';
+import {
+  subscribeToChat,
+  subscribeToMessage,
+  subscribeToUserChats,
+} from '../firebase/chat';
 import { observeUserChange } from '../firebase/user';
 import StartUpScreen from '../screens/StartUpScreen';
 import { clearAllChatsState } from '../store/chatsSlice';
+import { clearAllMessagesState } from '../store/messagesSlice';
 import StackNavigator from './StackNavigator';
 
 let chatUnsubscribes = {};
@@ -22,7 +27,12 @@ export default function MainNavigator() {
     return () => {
       console.log('Unsubscribing firebase listeners...');
       unsubscribeUserChats();
-      Object.values(chatUnsubscribes).forEach((callback) => callback());
+      Object.values(chatUnsubscribes).forEach(
+        ({ chatUnsubscribe, messageUnsubscribe }) => {
+          chatUnsubscribe();
+          messageUnsubscribe();
+        }
+      );
       chatUnsubscribes = {};
     };
   }, []);
@@ -31,11 +41,15 @@ export default function MainNavigator() {
     if (!chatIds.length) return;
 
     console.log('Subscribing to chat chanels...');
-    // add new chat chanels
+    // add new subscribes to chat chanels
     for (const newChatId of chatIds) {
       if (!chatUnsubscribes[newChatId]) {
-        const unsubscribe = subscribeToChat(newChatId);
-        chatUnsubscribes[newChatId] = unsubscribe;
+        const chatUnsubscribe = subscribeToChat(newChatId);
+        const messageUnsubscribe = subscribeToMessage(newChatId);
+        chatUnsubscribes[newChatId] = {
+          chatUnsubscribe,
+          messageUnsubscribe,
+        };
       }
     }
   }, [chatIds]);
@@ -44,6 +58,7 @@ export default function MainNavigator() {
   useEffect(() => {
     return () => {
       dispatch(clearAllChatsState());
+      dispatch(clearAllMessagesState());
     };
   }, []);
 

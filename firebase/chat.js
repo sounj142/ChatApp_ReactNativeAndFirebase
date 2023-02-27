@@ -1,8 +1,17 @@
 import app from './config';
-import { child, get, getDatabase, onValue, push, ref } from 'firebase/database';
+import {
+  child,
+  get,
+  getDatabase,
+  onValue,
+  push,
+  ref,
+  update,
+} from 'firebase/database';
 import { setChatIds, setChatsData } from '../store/chatsSlice';
 import { setStoredUsers } from '../store/usersSlice';
 import { store } from '../store/store';
+import { setMessagesData } from '../store/messagesSlice';
 
 export async function createChat(loggedInUserId, { users }) {
   const newChatData = {
@@ -52,5 +61,34 @@ export function subscribeToChat(chatId) {
       const user = userSnapshot.val();
       store.dispatch(setStoredUsers({ [userId]: user }));
     });
+  });
+}
+
+export function subscribeToMessage(chatId) {
+  const dbRef = ref(getDatabase(app));
+  const messageRef = child(dbRef, `messages/${chatId}`);
+
+  return onValue(messageRef, (messageSnapshot) => {
+    const messageData = messageSnapshot.val();
+    store.dispatch(setMessagesData({ chatId, messageData }));
+  });
+}
+
+export async function sendTextMessage(chatId, senderId, text) {
+  const dbRef = ref(getDatabase(app));
+  const messageRef = child(dbRef, `messages/${chatId}`);
+
+  const messageData = {
+    sentBy: senderId,
+    sentAt: new Date().toISOString(),
+    text: text,
+  };
+  await push(messageRef, messageData);
+
+  const chatRef = child(dbRef, `chats/${chatId}`);
+  await update(chatRef, {
+    updatedBy: senderId,
+    updatedAt: new Date().toISOString(),
+    lastestMessageText: text,
   });
 }

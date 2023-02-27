@@ -45,7 +45,7 @@ export default function ChatListScreen({ navigation }) {
           return (
             <DataItem
               title={`${user.firstName} ${user.lastName}`}
-              subTitle={'No message.'}
+              subTitle={chatData.lastestMessageText}
               imageUri={user.imageUri}
               onPress={() =>
                 navigation.navigate(Screens.Chat, {

@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authSlice from './authSlice';
 import chatsSlice from './chatsSlice';
+import messagesSlice from './messagesSlice';
 import usersSlice from './usersSlice';
 
 export const store = configureStore({
@@ -8,5 +9,6 @@ export const store = configureStore({
     auth: authSlice,
     chats: chatsSlice,
     users: usersSlice,
+    messages: messagesSlice,
   },
 });
