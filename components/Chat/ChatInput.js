@@ -11,8 +11,8 @@ export default function ChatInput({ onSendMessage }) {
   }
 
   const sendMessageHandler = useCallback(async () => {
-    await onSendMessage(messageText);
-    setMessageText('');
+    const succeed = await onSendMessage(messageText);
+    if (succeed) setMessageText('');
   }, [messageText]);
 
   return (

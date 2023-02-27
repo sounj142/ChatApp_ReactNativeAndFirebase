@@ -7,7 +7,9 @@ const messagesSlice = createSlice({
   },
   reducers: {
     setMessagesData: (state, action) => {
-      const { chatId, messageData } = action.payload;
+      let { chatId, messageData } = action.payload;
+      messageData = messageData || {};
+      Object.entries(messageData).forEach(([key, value]) => (value.key = key));
       state.messagesData[chatId] = messageData;
     },
     clearAllMessagesState: (state) => {

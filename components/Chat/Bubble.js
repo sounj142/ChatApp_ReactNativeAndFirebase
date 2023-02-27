@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Colors } from '../../utils/constants';
 
 export default function Bubble({ text, type }) {
+  const containerStyle = { ...styles.container };
   const innerContainerStyle = { ...styles.innerContainer };
   const textStyle = { ...styles.text };
 
@@ -9,13 +10,26 @@ export default function Bubble({ text, type }) {
     case 'system':
       textStyle.color = '#65644a';
       innerContainerStyle.backgroundColor = Colors.beige;
-      innerContainerStyle.alignItems = 'center';
       innerContainerStyle.marginTop = 10;
+      break;
+    case 'error':
+      textStyle.color = 'white';
+      innerContainerStyle.backgroundColor = Colors.red;
+      innerContainerStyle.marginTop = 10;
+      break;
+    case 'myMessage':
+      containerStyle.justifyContent = 'flex-end';
+      innerContainerStyle.backgroundColor = '#e7fed6';
+      innerContainerStyle.maxWidth = '90%';
+      break;
+    case 'theirMessage':
+      containerStyle.justifyContent = 'flex-start';
+      innerContainerStyle.maxWidth = '90%';
       break;
   }
 
   return (
-    <View style={styles.container}>
+    <View style={containerStyle}>
       <View style={innerContainerStyle}>
         <Text style={textStyle}>{text}</Text>
       </View>
@@ -27,6 +41,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'center',
+    paddingHorizontal: 20,
   },
   innerContainer: {
     backgroundColor: 'white',

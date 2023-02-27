@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import IoniconsHeaderButton from '../components/UI/IoniconsHeaderButton';
 import PageContainer from '../components/UI/PageContainer';
 import { Colors, Screens } from '../utils/constants';
@@ -13,6 +13,7 @@ import { setStoredUsers } from '../store/usersSlice';
 export default function NewChatScreen({ navigation }) {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
+  const chatsData = useSelector((state) => state.chats.chatsData);
 
   const [isLoading, setIsLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -49,9 +50,18 @@ export default function NewChatScreen({ navigation }) {
     });
   }, [navigation]);
 
-  function userSelectedHandler(user) {
-    navigation.navigate(Screens.Chat, { selectedUser: user });
-  }
+  const userSelectedHandler = useCallback(
+    (user) => {
+      const foundChat = Object.values(chatsData).find((c) =>
+        c.users.includes(user.userId)
+      );
+      navigation.navigate(Screens.Chat, {
+        selectedUser: user,
+        chatId: foundChat?.chatId,
+      });
+    },
+    [navigation, chatsData]
+  );
 
   return (
     <PageContainer ignoreTop isView>
