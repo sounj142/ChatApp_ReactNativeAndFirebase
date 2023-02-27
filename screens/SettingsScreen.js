@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import SettingsForm from '../components/Settings/SettingsForm';
 import ConfirmPasswordDialog from '../components/Settings/ConfirmPasswordDialog';
 import PageContainer from '../components/UI/PageContainer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { updateUser } from '../firebase/auth';
 import { authenticate } from '../store/authSlice';
 import SettingsTitle from '../components/Settings/SettingsTitle';
@@ -16,6 +16,14 @@ export default function SettingsScreen() {
   const userData = useSelector((state) => state.auth.userData);
   const [showConfirmPasswordDialog, setShowConfirmPasswordDialog] =
     useState(false);
+
+  // clear temp data
+  useEffect(() => {
+    return () => {
+      tempFormData = null;
+      promiseResolve = null;
+    };
+  }, []);
 
   async function saveSetings(formData) {
     const res = await updateUser({ ...userData, ...formData }, userData);

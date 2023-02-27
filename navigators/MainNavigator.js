@@ -1,42 +1,55 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Screens } from '../utils/constants';
-import ChatSettingsScreen from '../screens/ChatSettingsScreen';
-import BottomTabNavigator from './BottomTabNavigator';
-import ChatScreen from '../screens/ChatScreen';
-import NewChatScreen from '../screens/NewChatScreen';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { subscribeToChat, subscribeToUserChats } from '../firebase/chat';
+import StartUpScreen from '../screens/StartUpScreen';
+import { clearAllChatsState } from '../store/chatsSlice';
+import StackNavigator from './StackNavigator';
 
-const Stack = createNativeStackNavigator();
+let chatUnsubscribes = {};
 
-export default function MainNavigator({}) {
-  return (
-    <Stack.Navigator screenOptions={{ headerBackTitle: '' }}>
-      <Stack.Group>
-        <Stack.Screen
-          name={Screens.Home}
-          component={BottomTabNavigator}
-          options={{ headerShown: false }}
-        />
-
-        <Stack.Screen
-          name={Screens.Chat}
-          component={ChatScreen}
-          options={{ headerTitle: '' }}
-        />
-
-        <Stack.Screen
-          name={Screens.ChatSettings}
-          component={ChatSettingsScreen}
-          options={{ headerTitle: 'Settings' }}
-        />
-      </Stack.Group>
-
-      <Stack.Group screenOptions={{ presentation: 'containedModal' }}>
-        <Stack.Screen
-          name={Screens.NewChat}
-          component={NewChatScreen}
-          options={{ headerTitle: 'New Chat' }}
-        />
-      </Stack.Group>
-    </Stack.Navigator>
+export default function MainNavigator() {
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.auth.userData);
+  const chatIds = useSelector((state) => state.chats.chatIds);
+  const isFirstLoadingChats = useSelector(
+    (state) => state.chats.isFirstLoading
   );
+
+  useEffect(() => {
+    console.log('Subscribing to firebase listeners...');
+    const unsubscribeUserChats = subscribeToUserChats(
+      userData.userId,
+      dispatch
+    );
+    return () => {
+      console.log('Unsubscribing firebase listeners...');
+      unsubscribeUserChats();
+      Object.values(chatUnsubscribes).forEach((callback) => callback());
+      chatUnsubscribes = {};
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!chatIds.length) return;
+
+    console.log('Subscribing to chat chanels...');
+    // add new chat chanels
+    for (const newChatId of chatIds) {
+      if (!chatUnsubscribes[newChatId]) {
+        const unsubscribe = subscribeToChat(newChatId, dispatch);
+        chatUnsubscribes[newChatId] = unsubscribe;
+      }
+    }
+  }, [chatIds]);
+
+  // clear all chats data when user logout
+  useEffect(() => {
+    return () => {
+      dispatch(clearAllChatsState());
+    };
+  }, []);
+
+  if (isFirstLoadingChats) return <StartUpScreen />;
+
+  return <StackNavigator />;
 }

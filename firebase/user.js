@@ -61,23 +61,32 @@ export async function getUserInRealtimeDatabase(userId) {
 
 export async function searchUsers(searchText) {
   searchText = searchText.toLowerCase();
-  try {
-    const dbRef = ref(getDatabase(app));
-    const userRef = child(dbRef, 'users');
-    const queryRef = query(
-      userRef,
-      orderByChild('fullNameLowerCase'),
-      startAt(searchText),
-      endAt(searchText + '\uf8ff')
-    );
-    const snapshot = await get(queryRef);
 
-    if (!snapshot.exists()) return null;
-    return snapshot.val();
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const dbRef = ref(getDatabase(app));
+  const userRef = child(dbRef, 'users');
+  const queryRef = query(
+    userRef,
+    orderByChild('fullNameLowerCase'),
+    startAt(searchText),
+    endAt(searchText + '\uf8ff')
+  );
+  const snapshot = await get(queryRef);
+
+  if (!snapshot.exists()) return null;
+  return snapshot.val();
+}
+
+export async function getUsersByIds(userIds) {
+  const dbRef = ref(getDatabase(app));
+
+  const promises = userIds.map((userId) => {
+    const userRef = child(dbRef, `users/${userId}`);
+    return get(userRef);
+  });
+  const snapshots = await Promise.all(promises);
+  const users = snapshots.map((snapshot) => snapshot.val());
+
+  return users;
 }
 
 // export async function observeUserChange(userId) {
