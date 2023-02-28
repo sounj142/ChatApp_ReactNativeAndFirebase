@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { FlatList, ImageBackground, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
@@ -16,6 +22,8 @@ export default function ChatScreen({ navigation, route }) {
   const [chatId, setChatId] = useState(inputChatId || null);
   const [errorBannerText, setErrorBannerText] = useState('');
 
+  const flatListRef = useRef(null);
+
   const chatMessages = useSelector((state) => {
     const messages = state.messages.messagesData[chatId];
     if (!messages) return [];
@@ -23,8 +31,6 @@ export default function ChatScreen({ navigation, route }) {
       x.sentAt.localeCompare(y.sentAt)
     );
   });
-
-  console.log(chatMessages);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -104,9 +110,13 @@ export default function ChatScreen({ navigation, route }) {
                   <Bubble
                     text={`${message.text}`}
                     type={isOwn ? 'myMessage' : 'theirMessage'}
+                    message={message}
                   />
                 );
               }}
+              ref={flatListRef}
+              onContentSizeChange={() => flatListRef.current.scrollToEnd()}
+              onLayout={() => flatListRef.current.scrollToEnd()}
             />
           )}
         </ImageBackground>

@@ -3,8 +3,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { Provider } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
-import AppNavigator from './navigators/AppNavigator';
+import { MenuProvider } from 'react-native-popup-menu';
 import { LogBox, View } from 'react-native';
+import AppNavigator from './navigators/AppNavigator';
 import { store } from './store/store';
 
 // Keep the splash screen visible while we fetch resources
@@ -46,10 +47,12 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-        <StatusBar style='dark' />
-        <AppNavigator />
-      </View>
+      <MenuProvider>
+        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+          <StatusBar style='dark' />
+          <AppNavigator />
+        </View>
+      </MenuProvider>
     </Provider>
   );
 }
