@@ -33,6 +33,5 @@ const chatsSlice = createSlice({
 });
 
 export default chatsSlice.reducer;
-export const setChatIds = chatsSlice.actions.setChatIds;
-export const setChatsData = chatsSlice.actions.setChatsData;
-export const clearAllChatsState = chatsSlice.actions.clearAllChatsState;
+export const { setChatIds, setChatsData, clearAllChatsState } =
+  chatsSlice.actions;

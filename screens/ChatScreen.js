@@ -20,6 +20,9 @@ export default function ChatScreen({ navigation, route }) {
   const userData = useSelector((state) => state.auth.userData);
   const chatsData = useSelector((state) => state.chats.chatsData);
   const [chatId, setChatId] = useState(inputChatId || null);
+  const starredMessages = useSelector(
+    (state) => state.messages.starredMessages[chatId] || {}
+  );
   const [errorBannerText, setErrorBannerText] = useState('');
 
   const flatListRef = useRef(null);
@@ -106,11 +109,16 @@ export default function ChatScreen({ navigation, route }) {
               keyExtractor={(item) => item.key}
               renderItem={({ item: message }) => {
                 const isOwn = message.sentBy === userData.userId;
+                const isStarred = starredMessages[message.key];
                 return (
                   <Bubble
                     text={`${message.text}`}
                     type={isOwn ? 'myMessage' : 'theirMessage'}
-                    message={message}
+                    userId={userData.userId}
+                    chatId={chatId}
+                    messageId={message.key}
+                    isStarred={isStarred}
+                    sentAt={message.sentAt}
                   />
                 );
               }}

@@ -2,12 +2,22 @@ import { useRef } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import uuid from 'uuid';
-import { Feather } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { Colors } from '../../utils/constants';
 import MenuItem from './MenuItem';
+import { toggleStarMessage } from '../../firebase/chat';
+import { formatTime } from '../../utils/helper';
 
-export default function Bubble({ text, message, type }) {
+export default function Bubble({
+  userId,
+  chatId,
+  messageId,
+  text,
+  type,
+  isStarred,
+  sentAt,
+}) {
   const menuRef = useRef(null);
   const id = useRef(uuid.v4());
 
@@ -53,10 +63,30 @@ export default function Bubble({ text, message, type }) {
     return Clipboard.setStringAsync(text);
   }
 
+  function toggleStarHandler() {
+    return toggleStarMessage(userId, chatId, messageId);
+  }
+
+  const dateFormatted = formatTime(sentAt);
+
   return (
     <Pressable style={containerStyle} onLongPress={bubbleLongPressHandler}>
       <View style={innerContainerStyle}>
         <Text style={textStyle}>{text}</Text>
+
+        {dateFormatted && (
+          <View style={styles.timeContainer}>
+            {isStarred && (
+              <Ionicons
+                name='star'
+                size={14}
+                color={Colors.textColor}
+                style={styles.starIcon}
+              />
+            )}
+            <Text style={styles.time}>{dateFormatted}</Text>
+          </View>
+        )}
 
         {touchable && (
           <Menu ref={menuRef} name={id.current}>
@@ -70,8 +100,8 @@ export default function Bubble({ text, message, type }) {
               />
               <MenuItem
                 text='Star message'
-                onSelect={copyMessageToClipboardHandler}
-                icon='star-outline'
+                icon={isStarred ? 'star' : 'star-outline'}
+                onSelect={toggleStarHandler}
               />
             </MenuOptions>
           </Menu>
@@ -98,5 +128,18 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'regular',
     letterSpacing: 0.3,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  starIcon: {
+    marginRight: 5,
+  },
+  time: {
+    fontFamily: 'regular',
+    fontSize: 12,
+    letterSpacing: 0.3,
+    color: Colors.grey,
   },
 });

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   subscribeToChat,
   subscribeToMessage,
+  subscribeToStarredMessages,
   subscribeToUserChats,
 } from '../firebase/chat';
 import { observeUserChange } from '../firebase/user';
@@ -23,10 +24,16 @@ export default function MainNavigator() {
 
   useEffect(() => {
     console.log('Subscribing to firebase listeners...');
+    // watch all chat ids of current user
     const unsubscribeUserChats = subscribeToUserChats(userData.userId);
+    // watch all chat stars of current user
+    const unsubscribeStarred = subscribeToStarredMessages(userData.userId);
+
     return () => {
       console.log('Unsubscribing firebase listeners...');
       unsubscribeUserChats();
+      unsubscribeStarred();
+
       Object.values(chatUnsubscribes).forEach(
         ({ chatUnsubscribe, messageUnsubscribe }) => {
           chatUnsubscribe();
@@ -37,10 +44,10 @@ export default function MainNavigator() {
     };
   }, []);
 
+  // watch all chat channels of current user
   useEffect(() => {
     if (!chatIds.length) return;
 
-    console.log('Subscribing to chat chanels...');
     // add new subscribes to chat chanels
     for (const newChatId of chatIds) {
       if (!chatUnsubscribes[newChatId]) {

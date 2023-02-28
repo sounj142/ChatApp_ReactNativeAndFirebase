@@ -6,12 +6,14 @@ import {
   onValue,
   push,
   ref,
+  remove,
+  set,
   update,
 } from 'firebase/database';
 import { setChatIds, setChatsData } from '../store/chatsSlice';
 import { setStoredUsers } from '../store/usersSlice';
 import { store } from '../store/store';
-import { setMessagesData } from '../store/messagesSlice';
+import { setMessagesData, setStarredMessages } from '../store/messagesSlice';
 
 export async function createChat(loggedInUserId, { users }) {
   const newChatData = {
@@ -90,5 +92,35 @@ export async function sendTextMessage(chatId, senderId, text) {
     updatedBy: senderId,
     updatedAt: new Date().toISOString(),
     lastestMessageText: text,
+  });
+}
+
+export async function toggleStarMessage(userId, chatId, messageId) {
+  const dbRef = ref(getDatabase(app));
+  const starRef = child(
+    dbRef,
+    `userStarredMessages/${userId}/${chatId}/${messageId}`
+  );
+
+  const starSnapshot = await get(starRef);
+  if (starSnapshot.exists()) {
+    await remove(starRef);
+  } else {
+    const starData = {
+      chatId,
+      messageId,
+      starredAt: new Date().toISOString(),
+    };
+    await set(starRef, starData);
+  }
+}
+
+export function subscribeToStarredMessages(userId) {
+  const dbRef = ref(getDatabase(app));
+  const starRef = child(dbRef, `userStarredMessages/${userId}`);
+
+  return onValue(starRef, (querySnapshot) => {
+    const starredMessages = querySnapshot.val() || {};
+    store.dispatch(setStarredMessages(starredMessages));
   });
 }
