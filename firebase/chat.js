@@ -76,7 +76,7 @@ export function subscribeToMessage(chatId) {
   });
 }
 
-export async function sendTextMessage(chatId, senderId, text) {
+export async function sendTextMessage(chatId, senderId, text, replyTo) {
   const dbRef = ref(getDatabase(app));
   const messageRef = child(dbRef, `messages/${chatId}`);
 
@@ -84,6 +84,7 @@ export async function sendTextMessage(chatId, senderId, text) {
     sentBy: senderId,
     sentAt: new Date().toISOString(),
     text: text,
+    replyTo: replyTo ?? null,
   };
   await push(messageRef, messageData);
 

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { getFullName } from '../utils/helper';
 
 const authSlice = createSlice({
   name: 'auth',
@@ -8,6 +9,7 @@ const authSlice = createSlice({
   reducers: {
     authenticate: (state, action) => {
       const { userData } = action.payload;
+      userData.fullName = getFullName(userData);
       state.userData = userData;
     },
     logOut: (state) => {

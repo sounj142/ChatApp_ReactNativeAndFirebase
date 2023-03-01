@@ -60,7 +60,7 @@ export default function ChatListContent({
         const user = item[1];
         return (
           <DataItem
-            title={`${user.firstName} ${user.lastName}`}
+            title={user.fullName}
             subTitle={user.about}
             imageUri={user.imageUri}
             onPress={() => onUserSelected({ ...user })}

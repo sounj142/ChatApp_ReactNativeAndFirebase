@@ -1,6 +1,10 @@
 import { StyleSheet } from 'react-native';
 
-export const commonStyles = StyleSheet.create({});
+export const commonStyles = StyleSheet.create({
+  flex1: {
+    flex: 1,
+  },
+});
 
 export const modalStyles = StyleSheet.create({
   centeredView: {

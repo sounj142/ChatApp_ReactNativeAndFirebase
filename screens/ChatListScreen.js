@@ -44,7 +44,7 @@ export default function ChatListScreen({ navigation }) {
           if (!user) return;
           return (
             <DataItem
-              title={`${user.firstName} ${user.lastName}`}
+              title={user.fullName}
               subTitle={chatData.lastestMessageText}
               imageUri={user.imageUri}
               onPress={() =>

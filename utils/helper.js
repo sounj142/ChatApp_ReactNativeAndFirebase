@@ -11,3 +11,7 @@ export function formatTime(date) {
   let strTime = hours + ':' + minutes + ' ' + ampm;
   return strTime;
 }
+
+export function getFullName(user) {
+  return `${user.firstName} ${user.lastName}`;
+}

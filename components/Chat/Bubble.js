@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import uuid from 'uuid';
-import { Feather, Ionicons } from '@expo/vector-icons';
+import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { Colors } from '../../utils/constants';
 import MenuItem from './MenuItem';
@@ -17,6 +17,10 @@ export default function Bubble({
   type,
   isStarred,
   sentAt,
+  setReply,
+  replyToMessage,
+  replyToUser,
+  name,
 }) {
   const menuRef = useRef(null);
   const id = useRef(uuid.v4());
@@ -52,6 +56,10 @@ export default function Bubble({
       innerContainerStyle.maxWidth = '90%';
       touchable = true;
       break;
+    case 'reply':
+      containerStyle.paddingHorizontal = 0;
+      innerContainerStyle.backgroundColor = '#f2f2f2';
+      break;
   }
 
   function bubbleLongPressHandler() {
@@ -72,6 +80,16 @@ export default function Bubble({
   return (
     <Pressable style={containerStyle} onLongPress={bubbleLongPressHandler}>
       <View style={innerContainerStyle}>
+        {replyToUser && (
+          <Bubble
+            type='reply'
+            text={replyToMessage.text}
+            name={replyToUser.fullName}
+          />
+        )}
+
+        {name && <Text style={styles.name}>{name}</Text>}
+
         <Text style={textStyle}>{text}</Text>
 
         {dateFormatted && (
@@ -98,10 +116,18 @@ export default function Bubble({
                 icon='copy'
                 iconPack={Feather}
               />
+
               <MenuItem
                 text='Star message'
                 icon={isStarred ? 'star' : 'star-outline'}
                 onSelect={toggleStarHandler}
+              />
+
+              <MenuItem
+                text='Reply'
+                icon='reply'
+                iconPack={MaterialCommunityIcons}
+                onSelect={setReply}
               />
             </MenuOptions>
           </Menu>
@@ -141,5 +167,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     letterSpacing: 0.3,
     color: Colors.grey,
+  },
+  name: {
+    fontFamily: 'medium',
+    letterSpacing: 0.3,
   },
 });

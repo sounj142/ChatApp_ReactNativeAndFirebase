@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { getFullName } from '../utils/helper';
 
 const usersSlice = createSlice({
   name: 'users',
@@ -10,10 +11,12 @@ const usersSlice = createSlice({
       const users = action.payload;
       if (Array.isArray(users)) {
         users.forEach((user) => {
+          user.fullName = getFullName(user);
           state.storedUsers[user.userId] = user;
         });
       } else {
         Object.values(users).forEach((user) => {
+          user.fullName = getFullName(user);
           state.storedUsers[user.userId] = user;
         });
       }

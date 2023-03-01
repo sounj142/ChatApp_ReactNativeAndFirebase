@@ -5,13 +5,15 @@ import {
   useRef,
   useState,
 } from 'react';
-import { FlatList, ImageBackground, StyleSheet } from 'react-native';
+import { FlatList, ImageBackground, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import Bubble from '../components/Chat/Bubble';
 import ChatInput from '../components/Chat/ChatInput';
+import ReplyTo from '../components/Chat/ReplyTo';
 import MyKeyboardAvoidingView from '../components/UI/MyKeyboardAvoidingView';
 import { createChat, sendTextMessage } from '../firebase/chat';
+import { commonStyles } from '../utils/styles';
 
 let errorBannerTimerId;
 
@@ -23,10 +25,15 @@ export default function ChatScreen({ navigation, route }) {
   const starredMessages = useSelector(
     (state) => state.messages.starredMessages[chatId] || {}
   );
+  const storedUsers = useSelector((state) => state.users.storedUsers);
   const [errorBannerText, setErrorBannerText] = useState('');
 
   const flatListRef = useRef(null);
+  const [replyingTo, setReplyingTo] = useState(null);
 
+  const chatMessagesDict = useSelector(
+    (state) => state.messages.messagesData[chatId]
+  );
   const chatMessages = useSelector((state) => {
     const messages = state.messages.messagesData[chatId];
     if (!messages) return [];
@@ -37,7 +44,7 @@ export default function ChatScreen({ navigation, route }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: `${selectedUser.firstName} ${selectedUser.lastName}`,
+      headerTitle: selectedUser.fullName,
     });
   }, [navigation, selectedUser]);
 
@@ -72,8 +79,14 @@ export default function ChatScreen({ navigation, route }) {
           });
           setChatId(currentChatId);
         }
+        await sendTextMessage(
+          currentChatId,
+          userData.userId,
+          messageText,
+          replyingTo?.key
+        );
 
-        await sendTextMessage(currentChatId, userData.userId, messageText);
+        setReplyingTo(null);
         return true;
       } catch (error) {
         console.log('Error occurred when sending message', error);
@@ -88,15 +101,18 @@ export default function ChatScreen({ navigation, route }) {
         return false;
       }
     },
-    [chatId, chatsData, selectedUser.userId]
+    [chatId, chatsData, selectedUser.userId, replyingTo]
   );
 
   return (
-    <SafeAreaView edges={['right', 'left', 'bottom']} style={styles.flex1}>
+    <SafeAreaView
+      edges={['right', 'left', 'bottom']}
+      style={commonStyles.flex1}
+    >
       <MyKeyboardAvoidingView>
         <ImageBackground
           source={require('../assets/images/droplet.jpeg')}
-          style={styles.flex1}
+          style={commonStyles.flex1}
         >
           {!chatId && (
             <Bubble text='This is a new chat. Say hi!' type='system' />
@@ -110,21 +126,34 @@ export default function ChatScreen({ navigation, route }) {
               renderItem={({ item: message }) => {
                 const isOwn = message.sentBy === userData.userId;
                 const isStarred = starredMessages[message.key];
+                const replyToMessage = chatMessagesDict[message.replyTo];
+                const replyToUser = storedUsers[replyToMessage?.sentBy];
                 return (
                   <Bubble
-                    text={`${message.text}`}
+                    text={message.text}
                     type={isOwn ? 'myMessage' : 'theirMessage'}
                     userId={userData.userId}
                     chatId={chatId}
                     messageId={message.key}
                     isStarred={isStarred}
                     sentAt={message.sentAt}
+                    setReply={() => setReplyingTo(message)}
+                    replyToMessage={replyToMessage}
+                    replyToUser={replyToUser}
                   />
                 );
               }}
               ref={flatListRef}
               onContentSizeChange={() => flatListRef.current.scrollToEnd()}
               onLayout={() => flatListRef.current.scrollToEnd()}
+            />
+          )}
+
+          {replyingTo && (
+            <ReplyTo
+              text={replyingTo.text}
+              user={storedUsers[replyingTo.sentBy]}
+              onCancel={() => setReplyingTo(null)}
             />
           )}
         </ImageBackground>
@@ -135,8 +164,4 @@ export default function ChatScreen({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
-  flex1: {
-    flex: 1,
-  },
-});
+const styles = StyleSheet.create({});
