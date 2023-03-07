@@ -76,14 +76,23 @@ export function subscribeToMessage(chatId) {
   });
 }
 
-export async function sendTextMessage(chatId, senderId, text, replyTo) {
+export function sendTextMessage(chatId, senderId, text, replyTo) {
+  return sendMessage(chatId, senderId, text, null, replyTo);
+}
+
+export function sendImageMessage(chatId, senderId, imageUri, replyTo) {
+  return sendMessage(chatId, senderId, 'Image', imageUri, replyTo);
+}
+
+export async function sendMessage(chatId, senderId, text, imageUri, replyTo) {
   const dbRef = ref(getDatabase(app));
   const messageRef = child(dbRef, `messages/${chatId}`);
 
   const messageData = {
     sentBy: senderId,
     sentAt: new Date().toISOString(),
-    text: text,
+    text: text ?? null,
+    imageUri: imageUri ?? null,
     replyTo: replyTo ?? null,
   };
   await push(messageRef, messageData);

@@ -6,9 +6,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-import defaultImage from '../../assets/images/userImage.jpeg';
 import { useState } from 'react';
+import defaultImage from '../../assets/images/userImage.jpeg';
 import { Colors } from '../../utils/constants';
 import { launchImagePicker } from '../../utils/imagePickerHelper';
 

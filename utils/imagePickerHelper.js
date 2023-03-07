@@ -1,8 +1,9 @@
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
+import * as FileSystem from 'expo-file-system';
 
 export async function launchImagePicker() {
-  if (!(await checkMediaPermissions())) return null;
+  if (!(await checkPhotoPermissions())) return null;
 
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -17,12 +18,40 @@ export async function launchImagePicker() {
   return null;
 }
 
-async function checkMediaPermissions() {
+async function checkPhotoPermissions() {
   const result = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!result.granted) {
     Alert.alert(
       'Permission denied',
       'You must grant photo permission to upload image to your profile.'
+    );
+    return false;
+  }
+  return true;
+}
+
+export async function openCamera() {
+  if (!(await checkCameraPermissions())) return null;
+
+  const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 1,
+  });
+
+  if (!result.canceled) {
+    return result.assets[0].uri;
+  }
+  return null;
+}
+
+async function checkCameraPermissions() {
+  const result = await ImagePicker.requestCameraPermissionsAsync();
+  if (!result.granted) {
+    Alert.alert(
+      'Permission denied',
+      'You must grant camera access permission to capture your picture.'
     );
     return false;
   }
@@ -45,4 +74,15 @@ export function transformToBlob(uri) {
     xhr.open('GET', uri, true);
     xhr.send(null);
   });
+}
+
+export async function deleteTempImage(img, throwException) {
+  if (img) {
+    try {
+      await FileSystem.deleteAsync(img);
+    } catch (err) {
+      if (throwException) throw err;
+      console.log(err);
+    }
+  }
 }

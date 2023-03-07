@@ -15,6 +15,7 @@ import {
   getUserInRealtimeDatabase,
 } from './user';
 import { deleteImageAsync, uploadImageAsync } from './storage';
+import { deleteTempImage } from '../utils/imagePickerHelper';
 
 export async function signUp({ email, password, firstName, lastName }) {
   const auth = getAuth(app);
@@ -59,7 +60,9 @@ export async function updateUser(userData, oldUserData) {
       await updateEmail(currentUser, userData.email);
     }
 
-    const uploadNewImage = userData.imageUri !== oldUserData.imageUri;
+    const uploadNewImage =
+      userData.imageUri && userData.imageUri !== oldUserData.imageUri;
+    const savedImageUri = userData.imageUri;
     if (uploadNewImage) {
       userData.imageUri = await uploadImageAsync(userData.imageUri);
     }
@@ -68,6 +71,9 @@ export async function updateUser(userData, oldUserData) {
 
     if (uploadNewImage && oldUserData.imageUri) {
       await deleteImageAsync(oldUserData.imageUri);
+    }
+    if (uploadNewImage) {
+      await deleteTempImage(savedImageUri);
     }
     return {
       succeed: true,

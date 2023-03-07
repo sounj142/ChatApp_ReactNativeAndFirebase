@@ -12,7 +12,12 @@ import Bubble from '../components/Chat/Bubble';
 import ChatInput from '../components/Chat/ChatInput';
 import ReplyTo from '../components/Chat/ReplyTo';
 import MyKeyboardAvoidingView from '../components/UI/MyKeyboardAvoidingView';
-import { createChat, sendTextMessage } from '../firebase/chat';
+import {
+  createChat,
+  sendImageMessage,
+  sendTextMessage,
+} from '../firebase/chat';
+import { uploadChatImageAsync } from '../firebase/storage';
 import { commonStyles } from '../utils/styles';
 
 let errorBannerTimerId;
@@ -58,27 +63,32 @@ export default function ChatScreen({ navigation, route }) {
     };
   }, []);
 
+  async function getOrCreateChatChannel() {
+    let currentChatId = chatId;
+    if (!currentChatId) {
+      // find chatId
+      const foundChat = Object.values(chatsData).find((c) =>
+        c.users.includes(selectedUser.userId)
+      );
+      if (foundChat) {
+        currentChatId = foundChat.chatId;
+        setChatId(currentChatId);
+      }
+    }
+    if (!currentChatId) {
+      // no chat id, create a new chat
+      currentChatId = await createChat(userData.userId, {
+        users: [userData.userId, selectedUser.userId],
+      });
+      setChatId(currentChatId);
+    }
+    return currentChatId;
+  }
+
   const sendMessageHandler = useCallback(
     async (messageText) => {
       try {
-        let currentChatId = chatId;
-        if (!currentChatId) {
-          // find chatId
-          const foundChat = Object.values(chatsData).find((c) =>
-            c.users.includes(selectedUser.userId)
-          );
-          if (foundChat) {
-            currentChatId = foundChat.chatId;
-            setChatId(currentChatId);
-          }
-        }
-        if (!currentChatId) {
-          // no chat id, create a new chat
-          currentChatId = await createChat(userData.userId, {
-            users: [userData.userId, selectedUser.userId],
-          });
-          setChatId(currentChatId);
-        }
+        const currentChatId = await getOrCreateChatChannel();
         await sendTextMessage(
           currentChatId,
           userData.userId,
@@ -103,6 +113,28 @@ export default function ChatScreen({ navigation, route }) {
     },
     [chatId, chatsData, selectedUser.userId, replyingTo]
   );
+
+  const uploadPhotoConfirmHandler = async (tempImageUri) => {
+    try {
+      const currentChatId = await getOrCreateChatChannel();
+      const uploadedUrl = await uploadChatImageAsync(
+        tempImageUri,
+        currentChatId
+      );
+      await sendImageMessage(
+        currentChatId,
+        userData.userId,
+        uploadedUrl,
+        replyingTo?.key
+      );
+
+      setReplyingTo(null);
+      return true;
+    } catch (error) {
+      console.log('Error occurred when sending image message', error);
+      return false;
+    }
+  };
 
   return (
     <SafeAreaView
@@ -131,6 +163,7 @@ export default function ChatScreen({ navigation, route }) {
                 return (
                   <Bubble
                     text={message.text}
+                    imageUri={message.imageUri}
                     type={isOwn ? 'myMessage' : 'theirMessage'}
                     userId={userData.userId}
                     chatId={chatId}
@@ -144,8 +177,12 @@ export default function ChatScreen({ navigation, route }) {
                 );
               }}
               ref={flatListRef}
-              onContentSizeChange={() => flatListRef.current.scrollToEnd()}
-              onLayout={() => flatListRef.current.scrollToEnd()}
+              onContentSizeChange={() =>
+                flatListRef.current.scrollToEnd({ animated: false })
+              }
+              onLayout={() =>
+                flatListRef.current.scrollToEnd({ animated: false })
+              }
             />
           )}
 
@@ -158,7 +195,10 @@ export default function ChatScreen({ navigation, route }) {
           )}
         </ImageBackground>
 
-        <ChatInput onSendMessage={sendMessageHandler} />
+        <ChatInput
+          onSendMessage={sendMessageHandler}
+          onUploadImage={uploadPhotoConfirmHandler}
+        />
       </MyKeyboardAvoidingView>
     </SafeAreaView>
   );

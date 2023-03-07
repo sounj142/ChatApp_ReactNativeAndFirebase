@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Menu, MenuOptions, MenuTrigger } from 'react-native-popup-menu';
 import uuid from 'uuid';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -14,6 +14,7 @@ export default function Bubble({
   chatId,
   messageId,
   text,
+  imageUri,
   type,
   isStarred,
   sentAt,
@@ -58,6 +59,7 @@ export default function Bubble({
       break;
     case 'reply':
       containerStyle.paddingHorizontal = 0;
+      containerStyle.justifyContent = 'flex-start';
       innerContainerStyle.backgroundColor = '#f2f2f2';
       break;
   }
@@ -90,7 +92,11 @@ export default function Bubble({
 
         {name && <Text style={styles.name}>{name}</Text>}
 
-        <Text style={textStyle}>{text}</Text>
+        {imageUri ? (
+          <Image source={{ uri: imageUri }} style={styles.image} />
+        ) : (
+          <Text style={textStyle}>{text}</Text>
+        )}
 
         {dateFormatted && (
           <View style={styles.timeContainer}>
@@ -154,6 +160,11 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'regular',
     letterSpacing: 0.3,
+  },
+  image: {
+    width: 300,
+    height: 300,
+    marginBottom: 5,
   },
   timeContainer: {
     flexDirection: 'row',
