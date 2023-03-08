@@ -15,13 +15,14 @@ import { setStoredUsers } from '../store/usersSlice';
 import { store } from '../store/store';
 import { setMessagesData, setStarredMessages } from '../store/messagesSlice';
 
-export async function createChat(loggedInUserId, { users }) {
+export async function createChat(loggedInUserId, { users, groupName }) {
   const newChatData = {
     users,
     createdBy: loggedInUserId,
     createdAt: new Date().toISOString(),
     updatedBy: loggedInUserId,
     updatedAt: new Date().toISOString(),
+    groupName: groupName || null,
   };
   const dbRef = ref(getDatabase(app));
   const chatRef = child(dbRef, 'chats');

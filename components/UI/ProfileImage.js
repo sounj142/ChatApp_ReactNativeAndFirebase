@@ -7,12 +7,13 @@ import {
 } from 'react-native';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import defaultImage from '../../assets/images/userImage.jpeg';
+import userImage from '../../assets/images/userImage.jpeg';
 import { Colors } from '../../utils/constants';
 
 export default function ProfileImage({
   size,
   image,
+  defaultImage,
   style,
   onPress,
   showRemoveIcon,
@@ -32,7 +33,7 @@ export default function ProfileImage({
   return (
     <Container style={[styles.container, style]} onPress={onPress}>
       <Image
-        source={image ? { uri: image } : defaultImage}
+        source={image ? { uri: image } : defaultImage || userImage}
         style={[styles.image, { height: size, width: size }]}
         onLoadStart={imageLoadStartHandler}
         onLoadEnd={imageLoadEndHandler}

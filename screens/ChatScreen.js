@@ -1,11 +1,5 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
-import { FlatList, ImageBackground, StyleSheet, Text } from 'react-native';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { FlatList, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import Bubble from '../components/Chat/Bubble';
@@ -23,10 +17,10 @@ import { commonStyles } from '../utils/styles';
 let errorBannerTimerId;
 
 export default function ChatScreen({ navigation, route }) {
-  const { selectedUserId, chatId: inputChatId } = route.params;
+  const { selectedUsers, chatId: inputChatId, groupName } = route.params;
   const storedUsers = useSelector((state) => state.users.storedUsers);
-  const selectedUser = storedUsers[selectedUserId];
   const userData = useSelector((state) => state.auth.userData);
+  const otherUser = selectedUsers.find((u) => u.userId !== userData.userId);
   const chatsData = useSelector((state) => state.chats.chatsData);
   const [chatId, setChatId] = useState(inputChatId || null);
   const starredMessages = useSelector(
@@ -50,9 +44,9 @@ export default function ChatScreen({ navigation, route }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: selectedUser.fullName,
+      headerTitle: groupName ? `Group: ${groupName}` : otherUser.fullName,
     });
-  }, [navigation, selectedUser]);
+  }, [groupName, otherUser]);
 
   // clear errorBannerTimerId
   useEffect(() => {
@@ -68,52 +62,53 @@ export default function ChatScreen({ navigation, route }) {
     let currentChatId = chatId;
     if (!currentChatId) {
       // find chatId
-      const foundChat = Object.values(chatsData).find((c) =>
-        c.users.includes(selectedUser.userId)
-      );
-      if (foundChat) {
-        currentChatId = foundChat.chatId;
-        setChatId(currentChatId);
+      if (groupName) {
+      } else {
+        const foundChat = Object.values(chatsData).find((c) =>
+          c.users.includes(otherUser.userId)
+        );
+        if (foundChat) {
+          currentChatId = foundChat.chatId;
+          setChatId(currentChatId);
+        }
       }
     }
     if (!currentChatId) {
       // no chat id, create a new chat
       currentChatId = await createChat(userData.userId, {
-        users: [userData.userId, selectedUser.userId],
+        users: selectedUsers.map((u) => u.userId),
+        groupName,
       });
       setChatId(currentChatId);
     }
     return currentChatId;
   }
 
-  const sendMessageHandler = useCallback(
-    async (messageText) => {
-      try {
-        const currentChatId = await getOrCreateChatChannel();
-        await sendTextMessage(
-          currentChatId,
-          userData.userId,
-          messageText,
-          replyingTo?.key
-        );
+  const sendMessageHandler = async (messageText) => {
+    try {
+      const currentChatId = await getOrCreateChatChannel();
+      await sendTextMessage(
+        currentChatId,
+        userData.userId,
+        messageText,
+        replyingTo?.key
+      );
 
-        setReplyingTo(null);
-        return true;
-      } catch (error) {
-        console.log('Error occurred when sending message', error);
-        setErrorBannerText('Message failed to send.');
+      setReplyingTo(null);
+      return true;
+    } catch (error) {
+      console.log('Error occurred when sending message', error);
+      setErrorBannerText('Message failed to send.');
 
-        // clear error message after 5s
-        if (errorBannerTimerId) clearTimeout(errorBannerTimerId);
-        errorBannerTimerId = setTimeout(() => {
-          setErrorBannerText('');
-          errorBannerTimerId = undefined;
-        }, 5000);
-        return false;
-      }
-    },
-    [chatId, chatsData, selectedUser.userId, replyingTo]
-  );
+      // clear error message after 5s
+      if (errorBannerTimerId) clearTimeout(errorBannerTimerId);
+      errorBannerTimerId = setTimeout(() => {
+        setErrorBannerText('');
+        errorBannerTimerId = undefined;
+      }, 5000);
+      return false;
+    }
+  };
 
   const uploadPhotoConfirmHandler = async (tempImageUri) => {
     try {
@@ -158,6 +153,10 @@ export default function ChatScreen({ navigation, route }) {
               keyExtractor={(item) => item.key}
               renderItem={({ item: message }) => {
                 const isOwn = message.sentBy === userData.userId;
+                const ownerName =
+                  groupName && !isOwn
+                    ? storedUsers[message.sentBy].fullName
+                    : undefined;
                 const isStarred = starredMessages[message.key];
                 const replyToMessage = chatMessagesDict[message.replyTo];
                 const replyToUser = storedUsers[replyToMessage?.sentBy];
@@ -167,6 +166,7 @@ export default function ChatScreen({ navigation, route }) {
                     imageUri={message.imageUri}
                     type={isOwn ? 'myMessage' : 'theirMessage'}
                     userId={userData.userId}
+                    name={ownerName}
                     chatId={chatId}
                     messageId={message.key}
                     isStarred={isStarred}
@@ -204,5 +204,3 @@ export default function ChatScreen({ navigation, route }) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({});

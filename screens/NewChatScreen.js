@@ -54,7 +54,7 @@ export default function NewChatScreen({ navigation, route }) {
 
   const createPressHandler = () => {
     navigation.navigate(Screens.Chat, {
-      selectedUserIds: selectedUsers.map((u) => u.userId),
+      selectedUsers: [...selectedUsers, userData],
       groupName: groupName,
     });
   };
@@ -72,14 +72,14 @@ export default function NewChatScreen({ navigation, route }) {
           <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
             <Item
               title='Create'
-              onPress={() => createPressHandler}
+              onPress={createPressHandler}
               disabled={isDisableCreateGroup}
               color={isDisableCreateGroup ? Colors.lightGrey : undefined}
             />
           </HeaderButtons>
         ) : undefined,
     });
-  }, [isGroupChat, isDisableCreateGroup]);
+  }, [isGroupChat, isDisableCreateGroup, groupName, selectedUsers]);
 
   const userSelectedHandler = useCallback(
     (user) => {
@@ -98,12 +98,12 @@ export default function NewChatScreen({ navigation, route }) {
           c.users.includes(user.userId)
         );
         navigation.navigate(Screens.Chat, {
-          selectedUserId: user.userId,
+          selectedUsers: [user, userData],
           chatId: foundChat?.chatId,
         });
       }
     },
-    [chatsData, isGroupChat, setSelectedUsers]
+    [chatsData, isGroupChat, selectedUsers]
   );
 
   return (

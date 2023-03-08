@@ -7,6 +7,7 @@ export default function DataItem({
   title,
   subTitle,
   imageUri,
+  defaultImage,
   onPress,
   type,
   isChecked,
@@ -19,7 +20,7 @@ export default function DataItem({
       ]}
       onPress={onPress}
     >
-      <ProfileImage image={imageUri} size={40} />
+      <ProfileImage image={imageUri} defaultImage={defaultImage} size={40} />
 
       <View style={styles.textContainer}>
         <Text style={styles.title} numberOfLines={1}>

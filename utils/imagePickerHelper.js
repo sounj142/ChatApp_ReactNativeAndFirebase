@@ -9,7 +9,7 @@ export async function launchImagePicker() {
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsEditing: true,
     aspect: [1, 1],
-    quality: 1,
+    quality: 0.1,
   });
 
   if (!result.canceled) {
@@ -37,7 +37,7 @@ export async function openCamera() {
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsEditing: true,
     aspect: [1, 1],
-    quality: 1,
+    quality: 0.1,
   });
 
   if (!result.canceled) {

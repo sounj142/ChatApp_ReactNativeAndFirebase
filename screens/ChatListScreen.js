@@ -7,6 +7,7 @@ import IoniconsHeaderButton from '../components/UI/IoniconsHeaderButton';
 import DataItem from '../components/UI/DataItem';
 import PageContainer from '../components/UI/PageContainer';
 import ChatListHeader from '../components/ChatList/ChatListHeader';
+import groupDefaultImage from '../assets/images/group.jpg';
 
 export default function ChatListScreen({ navigation }) {
   const userData = useSelector((state) => state.auth.userData);
@@ -39,19 +40,25 @@ export default function ChatListScreen({ navigation }) {
         data={userChats}
         keyExtractor={(item) => item.chatId}
         renderItem={({ item: chatData }) => {
-          const userId = chatData.users.find((uid) => uid !== userData.userId);
-          const user = storedUsers[userId];
-
-          if (!user) return;
+          const otherUserId = chatData.users.find(
+            (uid) => uid !== userData.userId
+          );
+          const otherUser = storedUsers[otherUserId];
+          const isGroup = !!chatData.groupName;
+          if (!otherUser) return;
           return (
             <DataItem
-              title={user.fullName}
+              title={
+                isGroup ? `Group: ${chatData.groupName}` : otherUser.fullName
+              }
               subTitle={chatData.lastestMessageText}
-              imageUri={user.imageUri}
+              imageUri={isGroup ? undefined : otherUser.imageUri}
+              defaultImage={isGroup ? groupDefaultImage : undefined}
               onPress={() =>
                 navigation.navigate(Screens.Chat, {
-                  selectedUserId: user.userId,
+                  selectedUsers: [otherUser, userData],
                   chatId: chatData.chatId,
+                  groupName: chatData.groupName,
                 })
               }
             />
