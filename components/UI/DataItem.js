@@ -1,8 +1,16 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../utils/constants';
 import ProfileImage from './ProfileImage';
 
-export default function UserItem({ title, subTitle, imageUri, onPress }) {
+export default function DataItem({
+  title,
+  subTitle,
+  imageUri,
+  onPress,
+  type,
+  isChecked,
+}) {
   return (
     <Pressable
       style={({ pressed }) => [
@@ -17,10 +25,19 @@ export default function UserItem({ title, subTitle, imageUri, onPress }) {
         <Text style={styles.title} numberOfLines={1}>
           {title}
         </Text>
+
         <Text style={styles.subTitle} numberOfLines={1}>
           {subTitle}
         </Text>
       </View>
+
+      {type === 'checkbox' && (
+        <View
+          style={[styles.checkboxContainer, isChecked && styles.checkedStyle]}
+        >
+          <Ionicons name='checkmark' size={18} color='white' />
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -38,6 +55,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   textContainer: {
+    flex: 1,
     marginLeft: 14,
   },
   title: {
@@ -49,5 +67,15 @@ const styles = StyleSheet.create({
     fontFamily: 'regular',
     color: Colors.grey,
     letterSpacing: 0.3,
+  },
+  checkboxContainer: {
+    borderWidth: 1,
+    borderRadius: 50,
+    borderColor: Colors.lightGrey,
+    backgroundColor: 'white',
+  },
+  checkedStyle: {
+    backgroundColor: Colors.primary,
+    borderColor: 'transparent',
   },
 });

@@ -23,14 +23,15 @@ import { commonStyles } from '../utils/styles';
 let errorBannerTimerId;
 
 export default function ChatScreen({ navigation, route }) {
-  const { selectedUser, chatId: inputChatId } = route.params;
+  const { selectedUserId, chatId: inputChatId } = route.params;
+  const storedUsers = useSelector((state) => state.users.storedUsers);
+  const selectedUser = storedUsers[selectedUserId];
   const userData = useSelector((state) => state.auth.userData);
   const chatsData = useSelector((state) => state.chats.chatsData);
   const [chatId, setChatId] = useState(inputChatId || null);
   const starredMessages = useSelector(
     (state) => state.messages.starredMessages[chatId] || {}
   );
-  const storedUsers = useSelector((state) => state.users.storedUsers);
   const [errorBannerText, setErrorBannerText] = useState('');
 
   const flatListRef = useRef(null);

@@ -15,6 +15,8 @@ export default function ChatListContent({
   isLoading,
   users,
   onUserSelected,
+  isGroupChat,
+  selectedUsers,
 }) {
   if (!searchText)
     return (
@@ -58,12 +60,15 @@ export default function ChatListContent({
       keyExtractor={(item) => item[0]}
       renderItem={({ item }) => {
         const user = item[1];
+        const isChecked = !!selectedUsers.find((u) => u.userId === user.userId);
         return (
           <DataItem
             title={user.fullName}
             subTitle={user.about}
             imageUri={user.imageUri}
             onPress={() => onUserSelected({ ...user })}
+            type={isGroupChat ? 'checkbox' : undefined}
+            isChecked={isChecked}
           />
         );
       }}

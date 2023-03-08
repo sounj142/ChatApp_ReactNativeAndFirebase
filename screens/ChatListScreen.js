@@ -6,7 +6,7 @@ import { Screens } from '../utils/constants';
 import IoniconsHeaderButton from '../components/UI/IoniconsHeaderButton';
 import DataItem from '../components/UI/DataItem';
 import PageContainer from '../components/UI/PageContainer';
-import PageTitle from '../components/UI/PageTitle';
+import ChatListHeader from '../components/ChatList/ChatListHeader';
 
 export default function ChatListScreen({ navigation }) {
   const userData = useSelector((state) => state.auth.userData);
@@ -33,7 +33,8 @@ export default function ChatListScreen({ navigation }) {
 
   return (
     <PageContainer ignoreTop isView>
-      <PageTitle title='Chats' />
+      <ChatListHeader navigation={navigation} />
+
       <FlatList
         data={userChats}
         keyExtractor={(item) => item.chatId}
@@ -49,7 +50,7 @@ export default function ChatListScreen({ navigation }) {
               imageUri={user.imageUri}
               onPress={() =>
                 navigation.navigate(Screens.Chat, {
-                  selectedUser: user,
+                  selectedUserId: user.userId,
                   chatId: chatData.chatId,
                 })
               }

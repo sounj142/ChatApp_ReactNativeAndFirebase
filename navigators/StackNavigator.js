@@ -31,11 +31,7 @@ export default function StackNavigator() {
       </Stack.Group>
 
       <Stack.Group screenOptions={{ presentation: 'containedModal' }}>
-        <Stack.Screen
-          name={Screens.NewChat}
-          component={NewChatScreen}
-          options={{ headerTitle: 'New Chat' }}
-        />
+        <Stack.Screen name={Screens.NewChat} component={NewChatScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );
