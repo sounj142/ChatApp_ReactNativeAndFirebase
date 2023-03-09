@@ -4,6 +4,7 @@ export const Screens = {
   Chat: 'Chat',
   NewChat: 'NewChat',
   ChatSettings: 'ChatSettings',
+  Contact: 'Contact',
   Settings: 'Settings',
   LogIn: 'LogIn',
   SignUp: 'SignUp',

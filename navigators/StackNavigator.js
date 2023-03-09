@@ -4,6 +4,7 @@ import ChatSettingsScreen from '../screens/ChatSettingsScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import ChatScreen from '../screens/ChatScreen';
 import NewChatScreen from '../screens/NewChatScreen';
+import ContactScreen from '../screens/ContactScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -24,9 +25,14 @@ export default function StackNavigator() {
         />
 
         <Stack.Screen
+          name={Screens.Contact}
+          component={ContactScreen}
+          options={{ headerTitle: 'Contact Info' }}
+        />
+
+        <Stack.Screen
           name={Screens.ChatSettings}
           component={ChatSettingsScreen}
-          options={{ headerTitle: 'Settings' }}
         />
       </Stack.Group>
 

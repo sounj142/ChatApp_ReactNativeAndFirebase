@@ -1,10 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { FlatList, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import { useSelector } from 'react-redux';
 import Bubble from '../components/Chat/Bubble';
 import ChatInput from '../components/Chat/ChatInput';
 import ReplyTo from '../components/Chat/ReplyTo';
+import IoniconsHeaderButton from '../components/UI/IoniconsHeaderButton';
 import MyKeyboardAvoidingView from '../components/UI/MyKeyboardAvoidingView';
 import {
   createChat,
@@ -13,6 +15,7 @@ import {
 } from '../firebase/chat';
 import { uploadChatImageAsync } from '../firebase/storage';
 import { commonStyles } from '../utils/styles';
+import { Screens } from '../utils/constants';
 
 let errorBannerTimerId;
 
@@ -45,8 +48,23 @@ export default function ChatScreen({ navigation, route }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: groupName ? `Group: ${groupName}` : otherUser.fullName,
+      headerRight: () => (
+        <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
+          {chatId && (
+            <Item
+              title='Chat settings'
+              iconName='settings-outline'
+              onPress={() =>
+                groupName
+                  ? navigation.navigate(Screens.ChatSettings)
+                  : navigation.navigate(Screens.Contact, { user: otherUser })
+              }
+            />
+          )}
+        </HeaderButtons>
+      ),
     });
-  }, [groupName, otherUser]);
+  }, [chatId, groupName, otherUser]);
 
   // clear errorBannerTimerId
   useEffect(() => {

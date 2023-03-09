@@ -54,13 +54,14 @@ export default function ChatListScreen({ navigation }) {
               subTitle={chatData.lastestMessageText}
               imageUri={isGroup ? undefined : otherUser.imageUri}
               defaultImage={isGroup ? groupDefaultImage : undefined}
-              onPress={() =>
+              onPress={() => {
+                const users = chatData.users.map((uid) => storedUsers[uid]);
                 navigation.navigate(Screens.Chat, {
-                  selectedUsers: [otherUser, userData],
+                  selectedUsers: users,
                   chatId: chatData.chatId,
                   groupName: chatData.groupName,
-                })
-              }
+                });
+              }}
             />
           );
         }}

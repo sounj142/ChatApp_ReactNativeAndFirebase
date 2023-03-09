@@ -1,10 +1,11 @@
-import { KeyboardAvoidingView, StyleSheet } from 'react-native';
+import { KeyboardAvoidingView } from 'react-native';
+import { commonStyles } from '../../utils/styles';
 import { IS_IOS } from '../../utils/system';
 
 export default function MyKeyboardAvoidingView({ children, style }) {
   return (
     <KeyboardAvoidingView
-      style={[styles.flex1, style]}
+      style={[commonStyles.flex1, style]}
       behavior={IS_IOS ? 'padding' : undefined}
       keyboardVerticalOffset={100}
     >
@@ -12,9 +13,3 @@ export default function MyKeyboardAvoidingView({ children, style }) {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  flex1: {
-    flex: 1,
-  },
-});

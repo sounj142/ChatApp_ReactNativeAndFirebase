@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
 import { Colors } from '../../utils/constants';
 import DataItem from '../UI/DataItem';
+import { commonStyles } from '../../utils/styles';
 
 export default function ChatListContent({
   searchText,
@@ -20,7 +21,7 @@ export default function ChatListContent({
 }) {
   if (!searchText)
     return (
-      <View style={styles.center}>
+      <View style={commonStyles.center}>
         <Ionicons
           name='people-sharp'
           size={55}
@@ -35,14 +36,14 @@ export default function ChatListContent({
 
   if (isLoading)
     return (
-      <View style={styles.center}>
+      <View style={commonStyles.center}>
         <ActivityIndicator size={50} color={Colors.primary} />
       </View>
     );
 
   if (!users)
     return (
-      <View style={styles.center}>
+      <View style={commonStyles.center}>
         <Octicons
           name='question'
           size={55}
@@ -77,11 +78,6 @@ export default function ChatListContent({
 }
 
 const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   searchEmptyIcon: {
     marginBottom: 20,
   },

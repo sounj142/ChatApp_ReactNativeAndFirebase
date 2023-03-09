@@ -1,10 +1,11 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { commonStyles } from '../../utils/styles';
 
 export default function PageContainer({ children, style, ignoreTop, isView }) {
   return (
     <SafeAreaView
-      style={styles.safeArea}
+      style={commonStyles.flex1}
       edges={ignoreTop ? ['right', 'left', 'bottom'] : undefined}
     >
       {isView ? (
@@ -19,9 +20,6 @@ export default function PageContainer({ children, style, ignoreTop, isView }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
   container: {
     flex: 1,
     paddingHorizontal: 20,

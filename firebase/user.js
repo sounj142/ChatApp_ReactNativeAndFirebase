@@ -51,7 +51,7 @@ export async function updateUserInRealtimeDatabase(userData) {
       userData.lastName
     ),
     about: userData.about,
-    imageUri: userData.imageUri,
+    imageUri: userData.imageUri || null,
   });
   return userData;
 }
@@ -59,7 +59,8 @@ export async function updateUserInRealtimeDatabase(userData) {
 export async function getUserInRealtimeDatabase(userId) {
   const dbRef = ref(getDatabase(app));
   const userRef = child(dbRef, `users/${userId}`);
-  return (await get(userRef))?.val();
+  const snapshot = await get(userRef);
+  return snapshot?.val();
 }
 
 export async function searchUsers(searchText) {

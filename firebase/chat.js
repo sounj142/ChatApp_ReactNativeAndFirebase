@@ -135,3 +135,10 @@ export function subscribeToStarredMessages(userId) {
     store.dispatch(setStarredMessages(starredMessages));
   });
 }
+
+export async function getUserChats(userId) {
+  const dbRef = ref(getDatabase(app));
+  const userChatRef = child(dbRef, `userChats/${userId}`);
+  const snapshot = await get(userChatRef);
+  return snapshot.val();
+}
