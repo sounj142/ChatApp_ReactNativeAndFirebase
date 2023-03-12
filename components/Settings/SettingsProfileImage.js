@@ -7,15 +7,22 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import defaultImage from '../../assets/images/userImage.jpeg';
+import userImage from '../../assets/images/userImage.jpeg';
 import { Colors } from '../../utils/constants';
 import { launchImagePicker } from '../../utils/imagePickerHelper';
 
-export default function SettingsProfileImage({ size, image, setImage }) {
+export default function SettingsProfileImage({
+  size,
+  image,
+  setImage,
+  defaultImage,
+  parentSubmitting,
+}) {
   const [loading, setLoading] = useState(false);
+  const isLoading = loading || parentSubmitting;
 
   async function editImageHandler() {
-    if (loading) return;
+    if (isLoading) return;
     const img = await launchImagePicker();
     if (!img) return;
     setImage(img);
@@ -34,20 +41,22 @@ export default function SettingsProfileImage({ size, image, setImage }) {
       onPress={editImageHandler}
       style={({ pressed }) => [styles.container, pressed && styles.pressed]}
     >
-      <Image
-        source={image ? { uri: image } : defaultImage}
-        style={[styles.image, { height: size, width: size }]}
-        onLoadStart={imageLoadStartHandler}
-        onLoadEnd={imageLoadEndHandler}
-      />
+      <View>
+        <Image
+          source={image ? { uri: image } : defaultImage || userImage}
+          style={[styles.image, { height: size, width: size }]}
+          onLoadStart={imageLoadStartHandler}
+          onLoadEnd={imageLoadEndHandler}
+        />
 
-      {!loading && (
-        <View style={styles.editButton}>
-          <Ionicons name='pencil' size={20} color='white' />
-        </View>
-      )}
+        {!isLoading && (
+          <View style={styles.editButton}>
+            <Ionicons name='pencil' size={20} color='white' />
+          </View>
+        )}
+      </View>
 
-      {loading && (
+      {isLoading && (
         <View style={[styles.loadingContainer, { width: size, height: size }]}>
           <ActivityIndicator size={20} color={Colors.primary} />
         </View>
@@ -71,7 +80,7 @@ const styles = StyleSheet.create({
   editButton: {
     position: 'absolute',
     bottom: 0,
-    left: '50%',
+    right: 4,
     backgroundColor: Colors.blue,
     borderRadius: 20,
     padding: 6,

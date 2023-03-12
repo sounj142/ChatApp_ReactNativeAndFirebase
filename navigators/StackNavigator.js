@@ -33,6 +33,7 @@ export default function StackNavigator() {
         <Stack.Screen
           name={Screens.ChatSettings}
           component={ChatSettingsScreen}
+          options={{ headerTitle: '' }}
         />
       </Stack.Group>
 

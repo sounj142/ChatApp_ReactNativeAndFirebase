@@ -11,10 +11,12 @@ import MyKeyboardAvoidingView from '../components/UI/MyKeyboardAvoidingView';
 let tempFormData;
 let promiseResolve;
 
-export default function SettingsScreen() {
+export default function SettingsScreen({ navigation }) {
   const userData = useSelector((state) => state.auth.userData);
   const [showConfirmPasswordDialog, setShowConfirmPasswordDialog] =
     useState(false);
+  // we need this ver to force UI rerender to reset unsaved changes
+  const [uiVer, setUiVer] = useState(1);
 
   // clear temp data
   useEffect(() => {
@@ -55,6 +57,13 @@ export default function SettingsScreen() {
     setShowConfirmPasswordDialog(false);
   }
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('tabPress', async (e) => {
+      setUiVer((ver) => ver + 1);
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <PageContainer ignoreTop>
       <MyKeyboardAvoidingView>
@@ -65,7 +74,11 @@ export default function SettingsScreen() {
         />
         <SettingsTitle />
 
-        <SettingsForm onSubmit={saveSetingsHandler} userData={userData} />
+        <SettingsForm
+          key={uiVer}
+          onSubmit={saveSetingsHandler}
+          userData={userData}
+        />
       </MyKeyboardAvoidingView>
     </PageContainer>
   );

@@ -55,8 +55,9 @@ export default function ContactScreen({ navigation, route }) {
               key={chat.chatId}
               title={chat.groupName}
               subTitle={chat.lastestMessageText}
+              imageUri={chat.imageUri}
               defaultImage={groupDefaultImage}
-              type='link'
+              icon='chevron-forward-outline'
               onPress={() => {
                 const users = chat.users.map((uid) => storedUsers[uid]);
                 navigation.push(Screens.Chat, {

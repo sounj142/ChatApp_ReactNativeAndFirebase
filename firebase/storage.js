@@ -30,6 +30,10 @@ export async function uploadChatImageAsync(uri, chatId) {
   return await uploadImageAsync(uri, `ChatImages/${chatId}`);
 }
 
+export async function uploadGroupChatImageAsync(uri) {
+  return await uploadImageAsync(uri, 'GroupImages');
+}
+
 export async function deleteImageAsync(uri) {
   try {
     const fileRef = ref(getStorage(app), uri);

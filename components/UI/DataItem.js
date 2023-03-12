@@ -9,16 +9,20 @@ export default function DataItem({
   imageUri,
   defaultImage,
   onPress,
+  notPressable,
   type,
+  icon,
+  iconColor,
+  onIconPress,
   isChecked,
 }) {
   return (
     <Pressable
       style={({ pressed }) => [
         styles.container,
-        pressed && styles.containerPressed,
+        !notPressable && pressed && styles.containerPressed,
       ]}
-      onPress={onPress}
+      onPress={() => !notPressable && onPress && onPress()}
     >
       <ProfileImage image={imageUri} defaultImage={defaultImage} size={40} />
 
@@ -27,9 +31,11 @@ export default function DataItem({
           {title}
         </Text>
 
-        <Text style={styles.subTitle} numberOfLines={1}>
-          {subTitle}
-        </Text>
+        {!!subTitle && (
+          <Text style={styles.subTitle} numberOfLines={1}>
+            {subTitle}
+          </Text>
+        )}
       </View>
 
       {type === 'checkbox' && (
@@ -40,12 +46,13 @@ export default function DataItem({
         </View>
       )}
 
-      {type === 'link' && (
+      {icon && (
         <View>
           <Ionicons
-            name='chevron-forward-outline'
+            name={icon}
             size={18}
-            color={Colors.grey}
+            color={iconColor ?? Colors.grey}
+            onPress={onIconPress}
           />
         </View>
       )}

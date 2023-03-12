@@ -28,7 +28,9 @@ export default function NewChatScreen({ navigation, route }) {
   const [groupName, setGroupName] = useState('');
   const [users, setUsers] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const isDisableCreateGroup = !(groupName && selectedUsers.length);
+  const isDisableCreateGroup = !(
+    groupName.trim().length && selectedUsers.length
+  );
   const flatListRef = useRef(null);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export default function NewChatScreen({ navigation, route }) {
   const createPressHandler = () => {
     navigation.navigate(Screens.Chat, {
       selectedUsers: [...selectedUsers, userData],
-      groupName: groupName,
+      groupName: groupName.trim(),
     });
   };
 

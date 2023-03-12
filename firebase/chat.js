@@ -35,6 +35,25 @@ export async function createChat(loggedInUserId, { users, groupName }) {
   return newChat.key;
 }
 
+export async function updateChat(
+  chatId,
+  loggedInUserId,
+  imageUri = undefined,
+  groupName = undefined
+) {
+  const dbRef = ref(getDatabase(app));
+  const chatRef = child(dbRef, `chats/${chatId}`);
+
+  const updateData = {
+    updatedBy: loggedInUserId,
+    updatedAt: new Date().toISOString(),
+  };
+  if (imageUri) updateData.imageUri = imageUri;
+  if (groupName) updateData.groupName = groupName;
+
+  await update(chatRef, updateData);
+}
+
 export function subscribeToUserChats(userId) {
   const dbRef = ref(getDatabase(app));
   const userChatRef = child(dbRef, `userChats/${userId}`);

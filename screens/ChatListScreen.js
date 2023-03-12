@@ -52,7 +52,7 @@ export default function ChatListScreen({ navigation }) {
                 isGroup ? `Group: ${chatData.groupName}` : otherUser.fullName
               }
               subTitle={chatData.lastestMessageText}
-              imageUri={isGroup ? undefined : otherUser.imageUri}
+              imageUri={isGroup ? chatData.imageUri : otherUser.imageUri}
               defaultImage={isGroup ? groupDefaultImage : undefined}
               onPress={() => {
                 const users = chatData.users.map((uid) => storedUsers[uid]);

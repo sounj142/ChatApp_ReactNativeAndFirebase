@@ -26,6 +26,7 @@ export default function ChatScreen({ navigation, route }) {
   const otherUser = selectedUsers.find((u) => u.userId !== userData.userId);
   const chatsData = useSelector((state) => state.chats.chatsData);
   const [chatId, setChatId] = useState(inputChatId || null);
+  const currentChat = useSelector((state) => state.chats.chatsData[chatId]);
   const starredMessages = useSelector(
     (state) => state.messages.starredMessages[chatId] || {}
   );
@@ -47,7 +48,9 @@ export default function ChatScreen({ navigation, route }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: groupName ? `Group: ${groupName}` : otherUser.fullName,
+      headerTitle: groupName
+        ? `Group: ${currentChat?.groupName || groupName}`
+        : otherUser.fullName,
       headerRight: () => (
         <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
           {chatId && (
@@ -56,7 +59,7 @@ export default function ChatScreen({ navigation, route }) {
               iconName='settings-outline'
               onPress={() =>
                 groupName
-                  ? navigation.navigate(Screens.ChatSettings)
+                  ? navigation.navigate(Screens.ChatSettings, { chatId })
                   : navigation.navigate(Screens.Contact, { user: otherUser })
               }
             />
@@ -64,7 +67,7 @@ export default function ChatScreen({ navigation, route }) {
         </HeaderButtons>
       ),
     });
-  }, [chatId, groupName, otherUser]);
+  }, [chatId, groupName, otherUser, currentChat]);
 
   // clear errorBannerTimerId
   useEffect(() => {
@@ -80,8 +83,7 @@ export default function ChatScreen({ navigation, route }) {
     let currentChatId = chatId;
     if (!currentChatId) {
       // find chatId
-      if (groupName) {
-      } else {
+      if (!groupName) {
         const foundChat = Object.values(chatsData).find((c) =>
           c.users.includes(otherUser.userId)
         );
