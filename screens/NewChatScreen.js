@@ -56,7 +56,7 @@ export default function NewChatScreen({ navigation, route }) {
 
   const createPressHandler = () => {
     navigation.navigate(Screens.Chat, {
-      selectedUsers: [...selectedUsers, userData],
+      selectedUsersId: [...selectedUsers.map((u) => u.userId), userData.userId],
       groupName: groupName.trim(),
     });
   };
@@ -100,7 +100,7 @@ export default function NewChatScreen({ navigation, route }) {
           c.users.includes(user.userId)
         );
         navigation.navigate(Screens.Chat, {
-          selectedUsers: [user, userData],
+          selectedUsersId: [user.userId, userData.userId],
           chatId: foundChat?.chatId,
         });
       }

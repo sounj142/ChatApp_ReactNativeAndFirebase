@@ -20,13 +20,24 @@ import { Screens } from '../utils/constants';
 let errorBannerTimerId;
 
 export default function ChatScreen({ navigation, route }) {
-  const { selectedUsers, chatId: inputChatId, groupName } = route.params;
-  const storedUsers = useSelector((state) => state.users.storedUsers);
-  const userData = useSelector((state) => state.auth.userData);
-  const otherUser = selectedUsers.find((u) => u.userId !== userData.userId);
+  const {
+    selectedUsersId,
+    chatId: inputChatId,
+    groupName: inputGroupName,
+  } = route.params;
   const chatsData = useSelector((state) => state.chats.chatsData);
+  const storedUsers = useSelector((state) => state.users.storedUsers);
   const [chatId, setChatId] = useState(inputChatId || null);
   const currentChat = useSelector((state) => state.chats.chatsData[chatId]);
+  const selectedUsers = useSelector((state) => {
+    const chat = state.chats.chatsData[chatId];
+    const userIds = chat?.users || selectedUsersId;
+    return userIds.map((uid) => state.users.storedUsers[uid]);
+  });
+  const groupName = currentChat?.groupName ?? inputGroupName;
+
+  const userData = useSelector((state) => state.auth.userData);
+  const otherUser = selectedUsers.find((u) => u.userId !== userData.userId);
   const starredMessages = useSelector(
     (state) => state.messages.starredMessages[chatId] || {}
   );
@@ -48,9 +59,7 @@ export default function ChatScreen({ navigation, route }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: groupName
-        ? `Group: ${currentChat?.groupName || groupName}`
-        : otherUser.fullName,
+      headerTitle: groupName ? `Group: ${groupName}` : otherUser.fullName,
       headerRight: () => (
         <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
           {chatId && (
@@ -60,7 +69,9 @@ export default function ChatScreen({ navigation, route }) {
               onPress={() =>
                 groupName
                   ? navigation.navigate(Screens.ChatSettings, { chatId })
-                  : navigation.navigate(Screens.Contact, { user: otherUser })
+                  : navigation.navigate(Screens.Contact, {
+                      userId: otherUser.userId,
+                    })
               }
             />
           )}

@@ -105,7 +105,7 @@ export default function ChatSettingsScreen({ navigation, route }) {
                 icon={isCurrentUser ? undefined : 'chevron-forward-outline'}
                 notPressable={isCurrentUser}
                 onPress={() => {
-                  navigation.navigate(Screens.Contact, { user: user });
+                  navigation.navigate(Screens.Contact, { userId: user.userId });
                 }}
               />
             );

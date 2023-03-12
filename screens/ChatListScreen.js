@@ -55,11 +55,8 @@ export default function ChatListScreen({ navigation }) {
               imageUri={isGroup ? chatData.imageUri : otherUser.imageUri}
               defaultImage={isGroup ? groupDefaultImage : undefined}
               onPress={() => {
-                const users = chatData.users.map((uid) => storedUsers[uid]);
                 navigation.navigate(Screens.Chat, {
-                  selectedUsers: users,
                   chatId: chatData.chatId,
-                  groupName: chatData.groupName,
                 });
               }}
             />

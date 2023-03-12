@@ -10,9 +10,9 @@ import DataItem from '../components/UI/DataItem';
 import groupDefaultImage from '../assets/images/group.jpg';
 
 export default function ContactScreen({ navigation, route }) {
-  const { user } = route.params;
+  const { userId } = route.params;
+  const user = useSelector((state) => state.users.storedUsers[userId]);
   const chatsData = useSelector((state) => state.chats.chatsData);
-  const storedUsers = useSelector((state) => state.users.storedUsers);
   const [commonChats, setCommonChats] = useState([]);
 
   useEffect(() => {
@@ -59,12 +59,7 @@ export default function ContactScreen({ navigation, route }) {
               defaultImage={groupDefaultImage}
               icon='chevron-forward-outline'
               onPress={() => {
-                const users = chat.users.map((uid) => storedUsers[uid]);
-                navigation.push(Screens.Chat, {
-                  selectedUsers: users,
-                  chatId: chat.chatId,
-                  groupName: chat.groupName,
-                });
+                navigation.push(Screens.Chat, { chatId: chat.chatId });
               }}
             />
           ))}
