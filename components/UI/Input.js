@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: Colors.nearlyWhite,
     paddingHorizontal: 10,
-    paddingVertical: 15,
+    paddingVertical: 10,
     borderRadius: 2,
   },
   icon: {

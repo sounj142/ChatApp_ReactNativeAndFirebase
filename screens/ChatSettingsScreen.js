@@ -74,17 +74,15 @@ export default function ChatSettingsScreen({ navigation, route }) {
           value={groupName}
         />
 
-        <MyButton
-          onPress={submitHandler}
-          isLoading={isSubmiting}
-          disabled={
-            isSubmiting ||
-            !groupName.trim().length ||
-            (groupName === chatData.groupName && image === chatData.imageUri)
-          }
-        >
-          Save Changes
-        </MyButton>
+        {(groupName !== chatData.groupName || image !== chatData.imageUri) && (
+          <MyButton
+            onPress={submitHandler}
+            isLoading={isSubmiting}
+            disabled={isSubmiting || !groupName.trim().length}
+          >
+            Save Changes
+          </MyButton>
+        )}
 
         <View style={styles.usersContainer}>
           <Text style={styles.heading}>
