@@ -15,7 +15,7 @@ import Input from '../components/UI/Input';
 import MyButton from '../components/UI/MyButton';
 import DataItem from '../components/UI/DataItem';
 import { Colors, Screens } from '../utils/constants';
-import IconButton from '../components/UI/IconButton';
+import DataItemButton from '../components/UI/DataItemButton';
 
 export default function ChatSettingsScreen({ navigation, route }) {
   const { chatId } = route.params;
@@ -93,6 +93,8 @@ export default function ChatSettingsScreen({ navigation, route }) {
             Group
           </Text>
 
+          <DataItemButton title='Add users' icon='add' color={Colors.blue} />
+
           {chatData.users.map((uid) => {
             const user = storedUsers[uid];
             const isCurrentUser = user.userId === userData.userId;
@@ -110,17 +112,6 @@ export default function ChatSettingsScreen({ navigation, route }) {
               />
             );
           })}
-
-          <View style={styles.addButtonContainer}>
-            <IconButton
-              name='add'
-              size={24}
-              color='white'
-              text='Add Users'
-              style={styles.addButton}
-              textStyle={styles.textStyle}
-            />
-          </View>
         </View>
       </ScrollView>
     </PageContainer>
@@ -142,22 +133,5 @@ const styles = StyleSheet.create({
     color: Colors.textColor,
     marginVertical: 8,
     textAlign: 'center',
-  },
-  addButtonContainer: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 15,
-  },
-  addButton: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 30,
-    backgroundColor: Colors.primary,
-    width: 110,
-  },
-  textStyle: {
-    color: 'white',
   },
 });
