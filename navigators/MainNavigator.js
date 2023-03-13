@@ -46,7 +46,15 @@ export default function MainNavigator() {
 
   // watch all chat channels of current user
   useEffect(() => {
-    if (!chatIds.length) return;
+    // unsubscribe leaved groups
+    Object.keys(chatUnsubscribes).forEach((key) => {
+      if (!chatIds.includes(key)) {
+        const { chatUnsubscribe, messageUnsubscribe } = chatUnsubscribes[key];
+        chatUnsubscribe();
+        messageUnsubscribe();
+        delete chatUnsubscribes[key];
+      }
+    });
 
     // add new subscribes to chat chanels
     for (const newChatId of chatIds) {

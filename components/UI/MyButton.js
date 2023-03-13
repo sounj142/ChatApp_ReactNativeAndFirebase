@@ -8,6 +8,7 @@ export default function MyButton({
   disabled,
   style,
   textStyle,
+  loadingColor,
 }) {
   return (
     <Pressable
@@ -21,9 +22,12 @@ export default function MyButton({
       onPress={onPress}
     >
       {isLoading ? (
-        <ActivityIndicator size={21} color={Colors.blue} />
+        <ActivityIndicator size={21} color={loadingColor ?? Colors.blue} />
       ) : (
-        <Text style={[styles.text, disabled && styles.textDisabled, textStyle]}>
+        <Text
+          style={[styles.text, disabled && styles.textDisabled, textStyle]}
+          numberOfLines={1}
+        >
           {children}
         </Text>
       )}

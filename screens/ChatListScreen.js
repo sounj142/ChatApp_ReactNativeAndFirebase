@@ -45,14 +45,13 @@ export default function ChatListScreen({ navigation }) {
           );
           const otherUser = storedUsers[otherUserId];
           const isGroup = !!chatData.groupName;
-          if (!otherUser) return;
           return (
             <DataItem
               title={
-                isGroup ? `Group: ${chatData.groupName}` : otherUser.fullName
+                isGroup ? `Group: ${chatData.groupName}` : otherUser?.fullName
               }
               subTitle={chatData.lastestMessageText}
-              imageUri={isGroup ? chatData.imageUri : otherUser.imageUri}
+              imageUri={isGroup ? chatData.imageUri : otherUser?.imageUri}
               defaultImage={isGroup ? groupDefaultImage : undefined}
               onPress={() => {
                 navigation.navigate(Screens.Chat, {

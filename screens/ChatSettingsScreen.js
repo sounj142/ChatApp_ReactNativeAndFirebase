@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import SettingsProfileImage from '../components/Settings/SettingsProfileImage';
 import PageContainer from '../components/UI/PageContainer';
@@ -10,7 +10,7 @@ import {
   deleteImageAsync,
   uploadGroupChatImageAsync,
 } from '../firebase/storage';
-import { updateChat } from '../firebase/chat';
+import { leaveChatGroup, updateChat } from '../firebase/chat';
 import Input from '../components/UI/Input';
 import MyButton from '../components/UI/MyButton';
 import DataItem from '../components/UI/DataItem';
@@ -20,12 +20,16 @@ import DataItemButton from '../components/UI/DataItemButton';
 export default function ChatSettingsScreen({ navigation, route }) {
   const { chatId } = route.params;
   const userData = useSelector((state) => state.auth.userData);
-  const chatData = useSelector((state) => state.chats.chatsData[chatId]);
+  const chatData = useSelector(
+    (state) => state.chats.chatsData[chatId] || { users: [] }
+  );
   const storedUsers = useSelector((state) => state.users.storedUsers);
+  const currentUserIsGroupOwner = chatData.createdBy === userData.userId;
 
   const [image, setImage] = useState(chatData.imageUri);
   const [groupName, setGroupName] = useState(chatData.groupName);
   const [isSubmiting, setIsSubmiting] = useState(false);
+  const [isLeavingGroup, setIsLeavingGroup] = useState(false);
 
   useEffect(() => {
     if (chatData.imageUri !== image) setImage(chatData.imageUri);
@@ -53,6 +57,27 @@ export default function ChatSettingsScreen({ navigation, route }) {
     } finally {
       setIsSubmiting(false);
     }
+  }
+
+  async function leavingGroupProcess() {
+    if (isLeavingGroup) return;
+    setIsLeavingGroup(true);
+    try {
+      await leaveChatGroup(chatData, userData);
+      navigation.popToTop();
+    } finally {
+      setIsLeavingGroup(false);
+    }
+  }
+
+  function leavingGroupHandler() {
+    Alert.alert('Confirmation', 'Are you sure you want to leave this group?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      { text: 'OK', onPress: leavingGroupProcess },
+    ]);
   }
 
   return (
@@ -96,6 +121,7 @@ export default function ChatSettingsScreen({ navigation, route }) {
           {chatData.users.map((uid) => {
             const user = storedUsers[uid];
             const isCurrentUser = user.userId === userData.userId;
+
             return (
               <DataItem
                 key={user.userId}
@@ -105,12 +131,26 @@ export default function ChatSettingsScreen({ navigation, route }) {
                 icon={isCurrentUser ? undefined : 'chevron-forward-outline'}
                 notPressable={isCurrentUser}
                 onPress={() => {
-                  navigation.navigate(Screens.Contact, { userId: user.userId });
+                  navigation.navigate(Screens.Contact, {
+                    userId: user.userId,
+                    selectedChatId: currentUserIsGroupOwner
+                      ? chatId
+                      : undefined,
+                  });
                 }}
               />
             );
           })}
         </View>
+
+        <MyButton
+          onPress={leavingGroupHandler}
+          isLoading={isLeavingGroup}
+          disabled={isLeavingGroup}
+          style={styles.leavingButton}
+        >
+          Leave Chat
+        </MyButton>
       </ScrollView>
     </PageContainer>
   );
@@ -131,5 +171,10 @@ const styles = StyleSheet.create({
     color: Colors.textColor,
     marginVertical: 8,
     textAlign: 'center',
+  },
+  leavingButton: {
+    marginTop: 10,
+    backgroundColor: Colors.red,
+    width: 120,
   },
 });

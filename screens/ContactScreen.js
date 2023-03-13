@@ -1,19 +1,48 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import PageContainer from '../components/UI/PageContainer';
 import ProfileImage from '../components/UI/ProfileImage';
 import PageTitle from '../components/UI/PageTitle';
 import { Colors, Screens } from '../utils/constants';
-import { getUserChats } from '../firebase/chat';
+import { getUserChats, removeUserFromChatGroup } from '../firebase/chat';
 import DataItem from '../components/UI/DataItem';
 import groupDefaultImage from '../assets/images/group.jpg';
+import MyButton from '../components/UI/MyButton';
 
 export default function ContactScreen({ navigation, route }) {
-  const { userId } = route.params;
+  const { userId, selectedChatId } = route.params;
   const user = useSelector((state) => state.users.storedUsers[userId]);
   const chatsData = useSelector((state) => state.chats.chatsData);
+  const userData = useSelector((state) => state.auth.userData);
+  const selectedGroup = chatsData[selectedChatId];
   const [commonChats, setCommonChats] = useState([]);
+  const [isRemoving, setIsRemoving] = useState(false);
+
+  async function removeFromGroupProcess() {
+    if (isRemoving) return;
+    setIsRemoving(true);
+    try {
+      await removeUserFromChatGroup(selectedGroup, userData, user);
+      navigation.goBack();
+    } finally {
+      setIsRemoving(false);
+    }
+  }
+
+  function removeFromGroupHandler() {
+    Alert.alert(
+      'Confirmation',
+      `Are you sure you want to remove user [${user.fullName}] from this group?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: removeFromGroupProcess },
+      ]
+    );
+  }
 
   useEffect(() => {
     (async () => {
@@ -65,6 +94,18 @@ export default function ContactScreen({ navigation, route }) {
           ))}
         </View>
       )}
+
+      {selectedGroup && (
+        <MyButton
+          onPress={removeFromGroupHandler}
+          isLoading={isRemoving}
+          disabled={isRemoving}
+          style={styles.removeFromGroupButton}
+          loadingColor='white'
+        >
+          Remove from group "{selectedGroup.groupName}"
+        </MyButton>
+      )}
     </PageContainer>
   );
 }
@@ -89,5 +130,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
     color: Colors.textColor,
     marginVertical: 8,
+  },
+  removeFromGroupButton: {
+    backgroundColor: Colors.red,
+    marginTop: 10,
   },
 });

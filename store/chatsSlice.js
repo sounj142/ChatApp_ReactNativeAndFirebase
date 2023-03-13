@@ -13,6 +13,12 @@ const chatsSlice = createSlice({
       if (state.isFirstLoading && !state.chatIds.length) {
         state.isFirstLoading = false;
       }
+      const newChatsData = {};
+      for (const chatId of state.chatIds) {
+        if (state.chatsData[chatId])
+          newChatsData[chatId] = state.chatsData[chatId];
+      }
+      state.chatsData = newChatsData;
     },
     setChatsData: (state, action) => {
       const chatData = action.payload;

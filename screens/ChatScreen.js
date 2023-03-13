@@ -31,7 +31,7 @@ export default function ChatScreen({ navigation, route }) {
   const currentChat = useSelector((state) => state.chats.chatsData[chatId]);
   const selectedUsers = useSelector((state) => {
     const chat = state.chats.chatsData[chatId];
-    const userIds = chat?.users || selectedUsersId;
+    const userIds = chat?.users || selectedUsersId || [];
     return userIds.map((uid) => state.users.storedUsers[uid]);
   });
   const groupName = currentChat?.groupName ?? inputGroupName;
@@ -59,7 +59,7 @@ export default function ChatScreen({ navigation, route }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: groupName ? `Group: ${groupName}` : otherUser.fullName,
+      headerTitle: groupName ? `Group: ${groupName}` : otherUser?.fullName,
       headerRight: () => (
         <HeaderButtons HeaderButtonComponent={IoniconsHeaderButton}>
           {chatId && (
@@ -191,11 +191,13 @@ export default function ChatScreen({ navigation, route }) {
                 const isStarred = starredMessages[message.key];
                 const replyToMessage = chatMessagesDict[message.replyTo];
                 const replyToUser = storedUsers[replyToMessage?.sentBy];
+                let messageType =
+                  message.type || (isOwn ? 'myMessage' : 'theirMessage');
                 return (
                   <Bubble
                     text={message.text}
                     imageUri={message.imageUri}
-                    type={isOwn ? 'myMessage' : 'theirMessage'}
+                    type={messageType}
                     userId={userData.userId}
                     name={ownerName}
                     chatId={chatId}

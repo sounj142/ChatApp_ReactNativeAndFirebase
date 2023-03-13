@@ -62,6 +62,13 @@ export default function Bubble({
       containerStyle.justifyContent = 'flex-start';
       innerContainerStyle.backgroundColor = '#f2f2f2';
       break;
+    case 'info':
+      innerContainerStyle.backgroundColor = 'white';
+      innerContainerStyle.marginTop = 10;
+      innerContainerStyle.alignItems = 'center';
+      innerContainerStyle.width = '100%';
+      textStyle.color = Colors.textColor;
+      break;
   }
 
   function bubbleLongPressHandler() {
@@ -90,7 +97,7 @@ export default function Bubble({
           />
         )}
 
-        {name && <Text style={styles.name}>{name}</Text>}
+        {name && type !== 'info' && <Text style={styles.name}>{name}</Text>}
 
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.image} />
@@ -98,7 +105,7 @@ export default function Bubble({
           <Text style={textStyle}>{text}</Text>
         )}
 
-        {dateFormatted && (
+        {dateFormatted && type !== 'info' && (
           <View style={styles.timeContainer}>
             {isStarred && (
               <Ionicons
