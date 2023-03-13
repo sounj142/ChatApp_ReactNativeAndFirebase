@@ -10,6 +10,7 @@ export default function IconButton({
   iconStyle,
   text,
   textStyle,
+  disabled,
 }) {
   return (
     <Pressable
@@ -19,6 +20,7 @@ export default function IconButton({
         pressed && styles.pressed,
         style,
       ]}
+      disabled={disabled}
     >
       <Ionicons name={name} size={size} color={color} style={{ iconStyle }} />
       {!!text && <Text style={textStyle}>{text}</Text>}

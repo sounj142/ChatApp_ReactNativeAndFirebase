@@ -54,9 +54,12 @@ export default function ChatInput({ onSendMessage, onUploadImage }) {
   }, [tempImageUri, onUploadImage, isLoading, setIsLoading, setTempImageUri]);
 
   const sendMessageHandler = useCallback(async () => {
+    setIsLoading(true);
+
     const succeed = await onSendMessage(messageText);
     if (succeed) setMessageText('');
-  }, [messageText, onSendMessage]);
+    setIsLoading(false);
+  }, [messageText, onSendMessage, setIsLoading]);
 
   return (
     <View style={styles.inputContainer}>
@@ -66,6 +69,7 @@ export default function ChatInput({ onSendMessage, onUploadImage }) {
         color={Colors.blue}
         onPress={uploadPhotoHandler}
         style={styles.mediaButton}
+        disabled={isLoading}
       />
 
       <TextInput
@@ -82,6 +86,7 @@ export default function ChatInput({ onSendMessage, onUploadImage }) {
           color={Colors.blue}
           onPress={openCameraHandler}
           style={styles.mediaButton}
+          disabled={isLoading}
         />
       )}
 
@@ -92,6 +97,7 @@ export default function ChatInput({ onSendMessage, onUploadImage }) {
           color='white'
           onPress={sendMessageHandler}
           style={[styles.mediaButton, styles.sendButton]}
+          disabled={isLoading}
         />
       )}
 
