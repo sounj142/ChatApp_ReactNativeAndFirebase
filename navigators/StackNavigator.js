@@ -5,6 +5,7 @@ import BottomTabNavigator from './BottomTabNavigator';
 import ChatScreen from '../screens/ChatScreen';
 import NewChatScreen from '../screens/NewChatScreen';
 import ContactScreen from '../screens/ContactScreen';
+import UsersInGroupScreen from '../screens/UsersInGroupScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,12 @@ export default function StackNavigator() {
           name={Screens.ChatSettings}
           component={ChatSettingsScreen}
           options={{ headerTitle: '' }}
+        />
+
+        <Stack.Screen
+          name={Screens.UsersInGroup}
+          component={UsersInGroupScreen}
+          options={{ headerTitle: 'Participants' }}
         />
       </Stack.Group>
 

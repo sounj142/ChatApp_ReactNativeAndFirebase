@@ -16,6 +16,9 @@ import MyButton from '../components/UI/MyButton';
 import DataItem from '../components/UI/DataItem';
 import { Colors, Screens } from '../utils/constants';
 import DataItemButton from '../components/UI/DataItemButton';
+import TextLink from '../components/UI/TextLink';
+
+const LIMIT = 4;
 
 export default function ChatSettingsScreen({ navigation, route }) {
   const { chatId } = route.params;
@@ -118,7 +121,7 @@ export default function ChatSettingsScreen({ navigation, route }) {
 
           <DataItemButton title='Add users' icon='add' color={Colors.blue} />
 
-          {chatData.users.map((uid) => {
+          {chatData.users.slice(0, LIMIT).map((uid) => {
             const user = storedUsers[uid];
             const isCurrentUser = user.userId === userData.userId;
 
@@ -141,17 +144,28 @@ export default function ChatSettingsScreen({ navigation, route }) {
               />
             );
           })}
-        </View>
 
-        <MyButton
-          onPress={leavingGroupHandler}
-          isLoading={isLeavingGroup}
-          disabled={isLeavingGroup}
-          style={styles.leavingButton}
-        >
-          Leave Chat
-        </MyButton>
+          {chatData.users.length > LIMIT && (
+            <TextLink
+              onPress={() =>
+                navigation.navigate(Screens.UsersInGroup, { chatId })
+              }
+              style={styles.viewMore}
+            >
+              View more
+            </TextLink>
+          )}
+        </View>
       </ScrollView>
+
+      <MyButton
+        onPress={leavingGroupHandler}
+        isLoading={isLeavingGroup}
+        disabled={isLeavingGroup}
+        style={styles.leavingButton}
+      >
+        Leave Chat
+      </MyButton>
     </PageContainer>
   );
 }
@@ -170,11 +184,14 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
     color: Colors.textColor,
     marginVertical: 8,
-    textAlign: 'center',
+  },
+  viewMore: {
+    marginTop: 5,
+    alignItems: 'flex-end',
   },
   leavingButton: {
     marginTop: 10,
+    marginBottom: 15,
     backgroundColor: Colors.red,
-    width: 120,
   },
 });
