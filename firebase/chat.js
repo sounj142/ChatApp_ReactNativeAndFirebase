@@ -65,8 +65,8 @@ export async function removeUserFromChatGroup(
   loggedInUser,
   userToRemove
 ) {
-  if (chatData.createdBy === userToRemove.userId) return;
-  if (chatData.createdBy !== loggedInUser.userId) return;
+  if (chatData.createdBy !== loggedInUser.userId)
+    throw new Error('Only group owner can remove other user');
   if (!chatData || !chatData.users.includes(userToRemove.userId)) return;
 
   await _removeUserFromChatGroup(chatData, loggedInUser, userToRemove);
@@ -117,10 +117,38 @@ async function _removeUserFromChatGroup(chatData, loggedInUser, userToRemove) {
     // send info message
     const message =
       loggedInUserId === userToRemoveId
-        ? `[${loggedInUser.fullName}] leaved group`
-        : `[${loggedInUser.fullName}] removed [${userToRemove.fullName}] from group`;
+        ? `${loggedInUser.fullName} leaved group`
+        : `${loggedInUser.fullName} removed ${userToRemove.fullName} from group`;
     await sendInfoMessage(chatData.chatId, loggedInUserId, message);
   }
+}
+
+export async function addUsersToGroup(chatData, loggedInUser, usersToAdd) {
+  const loggedInUserId = loggedInUser.userId;
+  usersToAdd = usersToAdd.filter((u) => !chatData.users.includes(u.userId));
+  if (!usersToAdd.length) return;
+
+  // add users to group
+  const dbRef = ref(getDatabase(app));
+  const chatRef = child(dbRef, `chats/${chatData.chatId}`);
+  const users = [...chatData.users, ...usersToAdd.map((u) => u.userId)];
+  const newChatData = {
+    users: users,
+    updatedBy: loggedInUserId,
+    updatedAt: new Date().toISOString(),
+  };
+  await update(chatRef, newChatData);
+
+  // add mapping users <-> chatgroup
+  for (const user of usersToAdd) {
+    const userChatRef = child(dbRef, `userChats/${user.userId}`);
+    await push(userChatRef, chatData.chatId);
+  }
+
+  // send info message
+  const userAddedNames = usersToAdd.map((u) => u.fullName).join(', ');
+  const message = `${loggedInUser.fullName} added ${userAddedNames} to group`;
+  await sendInfoMessage(chatData.chatId, loggedInUserId, message);
 }
 
 export function subscribeToUserChats(userId) {

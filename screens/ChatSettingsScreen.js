@@ -119,7 +119,14 @@ export default function ChatSettingsScreen({ navigation, route }) {
             Group
           </Text>
 
-          <DataItemButton title='Add users' icon='add' color={Colors.blue} />
+          <DataItemButton
+            title='Add users'
+            icon='add'
+            color={Colors.blue}
+            onPress={() => {
+              navigation.navigate(Screens.AddUsersToGroup, { chatId });
+            }}
+          />
 
           {chatData.users.slice(0, LIMIT).map((uid) => {
             const user = storedUsers[uid];

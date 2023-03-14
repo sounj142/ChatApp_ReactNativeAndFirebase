@@ -3,6 +3,7 @@ export const Screens = {
   ChatList: 'ChatList',
   Chat: 'Chat',
   NewChat: 'NewChat',
+  AddUsersToGroup: 'AddUsersToGroup',
   ChatSettings: 'ChatSettings',
   UsersInGroup: 'UsersInGroup',
   Contact: 'Contact',

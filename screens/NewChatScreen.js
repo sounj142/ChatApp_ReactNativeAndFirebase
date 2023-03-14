@@ -19,7 +19,7 @@ import ProfileImage from '../components/UI/ProfileImage';
 
 export default function NewChatScreen({ navigation, route }) {
   const dispatch = useDispatch();
-  const isGroupChat = route.params?.isGroupChat;
+  const { isGroupChat } = route.params ?? {};
   const userData = useSelector((state) => state.auth.userData);
   const chatsData = useSelector((state) => state.chats.chatsData);
 
@@ -40,16 +40,19 @@ export default function NewChatScreen({ navigation, route }) {
         return;
       }
       setIsLoading(true);
+      try {
+        let usersResult = await searchUsers(searchText);
+        dispatch(setStoredUsers({ ...usersResult }));
 
-      let usersResult = await searchUsers(searchText);
-      dispatch(setStoredUsers({ ...usersResult }));
-
-      if (usersResult) {
-        delete usersResult[userData.userId];
-        if (!Object.keys(usersResult).length) usersResult = null;
+        if (usersResult) {
+          // remove current user from search result
+          delete usersResult[userData.userId];
+          if (!Object.keys(usersResult).length) usersResult = null;
+        }
+        setUsers(usersResult);
+      } finally {
+        setIsLoading(false);
       }
-      setUsers(usersResult);
-      setIsLoading(false);
     }, 300);
     return () => clearTimeout(delaySearch);
   }, [searchText]);
