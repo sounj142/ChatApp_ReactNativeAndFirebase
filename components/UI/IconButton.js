@@ -22,7 +22,7 @@ export default function IconButton({
       ]}
       disabled={disabled}
     >
-      <Ionicons name={name} size={size} color={color} style={{ iconStyle }} />
+      <Ionicons name={name} size={size} color={color} style={iconStyle} />
       {!!text && <Text style={textStyle}>{text}</Text>}
     </Pressable>
   );
