@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../utils/constants';
 
-export default function DataItemButton({ title, onPress, icon, color }) {
+export default function DataItemIconButton({ title, onPress, icon, color }) {
   return (
     <Pressable
       style={({ pressed }) => [

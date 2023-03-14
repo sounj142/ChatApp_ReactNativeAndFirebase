@@ -4,6 +4,7 @@ export const Screens = {
   Chat: 'Chat',
   NewChat: 'NewChat',
   AddUsersToGroup: 'AddUsersToGroup',
+  StarredMessages: 'StarredMessages',
   ChatSettings: 'ChatSettings',
   UsersInGroup: 'UsersInGroup',
   Contact: 'Contact',

@@ -15,8 +15,8 @@ import Input from '../components/UI/Input';
 import MyButton from '../components/UI/MyButton';
 import DataItem from '../components/UI/DataItem';
 import { Colors, Screens } from '../utils/constants';
-import DataItemButton from '../components/UI/DataItemButton';
-import TextLink from '../components/UI/TextLink';
+import DataItemIconButton from '../components/UI/DataItemIconButton';
+import DataItemTextButton from '../components/UI/DataItemTextButton';
 
 const LIMIT = 4;
 
@@ -119,7 +119,7 @@ export default function ChatSettingsScreen({ navigation, route }) {
             Group
           </Text>
 
-          <DataItemButton
+          <DataItemIconButton
             title='Add users'
             icon='add'
             color={Colors.blue}
@@ -153,15 +153,24 @@ export default function ChatSettingsScreen({ navigation, route }) {
           })}
 
           {chatData.users.length > LIMIT && (
-            <TextLink
+            <DataItemTextButton
+              title='View all'
+              icon='chevron-forward-outline'
+              titleStyle={styles.textButtonStyle}
               onPress={() =>
                 navigation.navigate(Screens.UsersInGroup, { chatId })
               }
-              style={styles.viewMore}
-            >
-              View more
-            </TextLink>
+            />
           )}
+
+          <DataItemTextButton
+            title='Starred messages'
+            icon='chevron-forward-outline'
+            titleStyle={styles.textButtonStyle}
+            onPress={() =>
+              navigation.navigate(Screens.StarredMessages, { chatId })
+            }
+          />
         </View>
       </ScrollView>
 
@@ -192,9 +201,8 @@ const styles = StyleSheet.create({
     color: Colors.textColor,
     marginVertical: 8,
   },
-  viewMore: {
-    marginTop: 5,
-    alignItems: 'flex-end',
+  textButtonStyle: {
+    color: Colors.blue,
   },
   leavingButton: {
     marginTop: 10,

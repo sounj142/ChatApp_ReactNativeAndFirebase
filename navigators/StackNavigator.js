@@ -7,6 +7,7 @@ import NewChatScreen from '../screens/NewChatScreen';
 import ContactScreen from '../screens/ContactScreen';
 import UsersInGroupScreen from '../screens/UsersInGroupScreen';
 import AddUsersToGroupScreen from '../screens/AddUsersToGroupScreen';
+import StarredMessagesScreen from '../screens/StarredMessagesScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,12 +42,19 @@ export default function StackNavigator() {
         <Stack.Screen
           name={Screens.UsersInGroup}
           component={UsersInGroupScreen}
-          options={{ headerTitle: 'Participants' }}
+          options={{ headerTitle: '' }}
+        />
+
+        <Stack.Screen
+          name={Screens.StarredMessages}
+          component={StarredMessagesScreen}
+          options={{ headerTitle: '' }}
         />
       </Stack.Group>
 
       <Stack.Group screenOptions={{ presentation: 'containedModal' }}>
         <Stack.Screen name={Screens.NewChat} component={NewChatScreen} />
+
         <Stack.Screen
           name={Screens.AddUsersToGroup}
           component={AddUsersToGroupScreen}

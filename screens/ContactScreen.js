@@ -9,6 +9,7 @@ import { getUserChats, removeUserFromChatGroup } from '../firebase/chat';
 import DataItem from '../components/UI/DataItem';
 import groupDefaultImage from '../assets/images/group.jpg';
 import MyButton from '../components/UI/MyButton';
+import TextLink from '../components/UI/TextLink';
 
 export default function ContactScreen({ navigation, route }) {
   const { userId, selectedChatId } = route.params;
@@ -18,6 +19,16 @@ export default function ContactScreen({ navigation, route }) {
   const selectedGroup = chatsData[selectedChatId];
   const [commonChats, setCommonChats] = useState([]);
   const [isRemoving, setIsRemoving] = useState(false);
+
+  const bilateralChat = useSelector((state) =>
+    Object.values(state.chats.chatsData).find(
+      (chat) =>
+        !chat.groupName &&
+        chat.users.length === 2 &&
+        chat.users.includes(userData.userId) &&
+        chat.users.includes(userId)
+    )
+  );
 
   async function removeFromGroupProcess() {
     if (isRemoving) return;
@@ -71,6 +82,18 @@ export default function ContactScreen({ navigation, route }) {
           </Text>
         )}
       </View>
+
+      {bilateralChat && (
+        <TextLink
+          onPress={() =>
+            navigation.navigate(Screens.StarredMessages, {
+              chatId: bilateralChat.chatId,
+            })
+          }
+        >
+          View Starred Messages
+        </TextLink>
+      )}
 
       {!!commonChats.length && (
         <View>
@@ -129,7 +152,7 @@ const styles = StyleSheet.create({
     fontFamily: 'bold',
     letterSpacing: 0.3,
     color: Colors.textColor,
-    marginVertical: 8,
+    marginTop: 14,
   },
   removeFromGroupButton: {
     backgroundColor: Colors.red,

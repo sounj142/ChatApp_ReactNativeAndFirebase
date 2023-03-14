@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import PageContainer from '../components/UI/PageContainer';
 import DataItem from '../components/UI/DataItem';
 import { Colors, Screens } from '../utils/constants';
+import { useLayoutEffect } from 'react';
 
 export default function UsersInGroupScreen({ navigation, route }) {
   const { chatId } = route.params;
@@ -12,6 +13,12 @@ export default function UsersInGroupScreen({ navigation, route }) {
   );
   const storedUsers = useSelector((state) => state.users.storedUsers);
   const currentUserIsGroupOwner = chatData.createdBy === userData.userId;
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: `Group: ${chatData.groupName}`,
+    });
+  }, [navigation, chatData]);
 
   return (
     <PageContainer ignoreTop isView>
