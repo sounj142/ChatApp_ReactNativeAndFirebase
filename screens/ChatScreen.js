@@ -211,12 +211,14 @@ export default function ChatScreen({ navigation, route }) {
                 );
               }}
               ref={flatListRef}
-              onContentSizeChange={() =>
-                flatListRef.current.scrollToEnd({ animated: false })
-              }
-              onLayout={() =>
-                flatListRef.current.scrollToEnd({ animated: false })
-              }
+              onContentSizeChange={() => {
+                if (chatMessages.length)
+                  flatListRef.current.scrollToEnd({ animated: false });
+              }}
+              onLayout={() => {
+                if (chatMessages.length)
+                  flatListRef.current.scrollToEnd({ animated: false });
+              }}
             />
           )}
 

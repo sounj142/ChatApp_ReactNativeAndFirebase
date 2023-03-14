@@ -147,9 +147,10 @@ export default function NewChatScreen({ navigation, route }) {
               );
             }}
             ref={flatListRef}
-            onContentSizeChange={() =>
-              flatListRef.current.scrollToEnd({ animated: false })
-            }
+            onContentSizeChange={() => {
+              if (selectedUsers.length)
+                flatListRef.current.scrollToEnd({ animated: false });
+            }}
           />
         </View>
       )}
