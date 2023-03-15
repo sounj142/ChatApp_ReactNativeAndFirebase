@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { FlatList, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
@@ -11,6 +11,7 @@ import MyKeyboardAvoidingView from '../components/UI/MyKeyboardAvoidingView';
 import {
   createChat,
   sendImageMessage,
+  sendPushNotificationForUsers,
   sendTextMessage,
 } from '../firebase/chat';
 import { uploadChatImageAsync } from '../firebase/storage';
@@ -43,7 +44,6 @@ export default function ChatScreen({ navigation, route }) {
   );
   const [errorBannerText, setErrorBannerText] = useState('');
 
-  const flatListRef = useRef(null);
   const [replyingTo, setReplyingTo] = useState(null);
 
   const chatMessagesDict = useSelector(
@@ -53,7 +53,7 @@ export default function ChatScreen({ navigation, route }) {
     const messages = state.messages.messagesData[chatId];
     if (!messages) return [];
     return Object.values(messages).sort((x, y) =>
-      x.sentAt.localeCompare(y.sentAt)
+      y.sentAt.localeCompare(x.sentAt)
     );
   });
 
@@ -95,8 +95,8 @@ export default function ChatScreen({ navigation, route }) {
     if (!currentChatId) {
       // find chatId
       if (!groupName) {
-        const foundChat = Object.values(chatsData).find((c) =>
-          c.users.includes(otherUser.userId)
+        const foundChat = Object.values(chatsData).find(
+          (c) => !c.groupName && c.users.includes(otherUser.userId)
         );
         if (foundChat) {
           currentChatId = foundChat.chatId;
@@ -115,6 +115,16 @@ export default function ChatScreen({ navigation, route }) {
     return currentChatId;
   }
 
+  const sendMessagePushNotification = (title, body, chatId) => {
+    let userIds = selectedUsers
+      .map((u) => u.userId)
+      .filter((uid) => uid !== userData.userId);
+    if (!userIds?.length) return;
+
+    userIds = userIds;
+    sendPushNotificationForUsers(userIds, title, body, { chatId: chatId });
+  };
+
   const sendMessageHandler = async (messageText) => {
     try {
       const currentChatId = await getOrCreateChatChannel();
@@ -123,6 +133,12 @@ export default function ChatScreen({ navigation, route }) {
         userData.userId,
         messageText,
         replyingTo?.key
+      );
+
+      sendMessagePushNotification(
+        userData.fullName,
+        messageText,
+        currentChatId
       );
 
       setReplyingTo(null);
@@ -155,6 +171,12 @@ export default function ChatScreen({ navigation, route }) {
         replyingTo?.key
       );
 
+      sendMessagePushNotification(
+        userData.fullName,
+        'Sent an image',
+        currentChatId
+      );
+
       setReplyingTo(null);
       return true;
     } catch (error) {
@@ -180,6 +202,11 @@ export default function ChatScreen({ navigation, route }) {
 
           {chatId && (
             <FlatList
+              inverted
+              contentContainerStyle={{
+                flexGrow: 1,
+                justifyContent: 'flex-end',
+              }}
               data={chatMessages}
               keyExtractor={(item) => item.key}
               renderItem={({ item: message }) => {
@@ -209,15 +236,6 @@ export default function ChatScreen({ navigation, route }) {
                     replyToUser={replyToUser}
                   />
                 );
-              }}
-              ref={flatListRef}
-              onContentSizeChange={() => {
-                if (chatMessages.length)
-                  flatListRef.current.scrollToEnd({ animated: false });
-              }}
-              onLayout={() => {
-                if (chatMessages.length)
-                  flatListRef.current.scrollToEnd({ animated: false });
               }}
             />
           )}

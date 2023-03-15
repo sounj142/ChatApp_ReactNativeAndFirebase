@@ -99,8 +99,8 @@ export default function NewChatScreen({ navigation, route }) {
           return result;
         });
       } else {
-        const foundChat = Object.values(chatsData).find((c) =>
-          c.users.includes(user.userId)
+        const foundChat = Object.values(chatsData).find(
+          (c) => !c.groupName && c.users.includes(user.userId)
         );
         navigation.navigate(Screens.Chat, {
           selectedUsersId: [user.userId, userData.userId],

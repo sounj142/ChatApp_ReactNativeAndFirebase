@@ -4,11 +4,13 @@ import { Colors } from '../../utils/constants';
 import MyButton from '../UI/MyButton';
 import { logOut as logOutAction } from '../../store/authSlice';
 import { useDispatch } from 'react-redux';
+import { removeCurrentUserPushToken } from '../../firebase/user';
 
 export default function SettingsTitle() {
   const dispatch = useDispatch();
 
   async function logOutHandler() {
+    await removeCurrentUserPushToken();
     await logOut();
     dispatch(logOutAction());
   }

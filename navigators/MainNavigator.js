@@ -1,26 +1,62 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import * as Notifications from 'expo-notifications';
 import {
   subscribeToChat,
   subscribeToMessage,
   subscribeToStarredMessages,
   subscribeToUserChats,
 } from '../firebase/chat';
-import { observeUserChange } from '../firebase/user';
+import { observeUserChange, storePushToken } from '../firebase/user';
 import StartUpScreen from '../screens/StartUpScreen';
 import { clearAllChatsState } from '../store/chatsSlice';
 import { clearAllMessagesState } from '../store/messagesSlice';
 import StackNavigator from './StackNavigator';
+import { registerForPushNotificationsAsync } from '../utils/notifications';
+import { Screens } from '../utils/constants';
+import { StackActions, useNavigation } from '@react-navigation/native';
 
 let chatUnsubscribes = {};
 
 export default function MainNavigator() {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
   const chatIds = useSelector((state) => state.chats.chatIds);
   const isFirstLoadingChats = useSelector(
     (state) => state.chats.isFirstLoading
   );
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => {
+      storePushToken(userData, token);
+    });
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        // handle received notification
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        const data = response.notification.request.content.data;
+        if (data?.chatId) {
+          const pushAction = StackActions.push(Screens.Chat, {
+            chatId: data.chatId,
+          });
+          navigation.dispatch(pushAction);
+        }
+      });
+
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
 
   useEffect(() => {
     console.log('Subscribing to firebase listeners...');

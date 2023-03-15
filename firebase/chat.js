@@ -272,3 +272,55 @@ export async function getUserChats(userId) {
   const snapshot = await get(userChatRef);
   return snapshot.val();
 }
+
+async function sendPushNotification(
+  expoPushToken,
+  title,
+  body,
+  data = undefined
+) {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: title,
+    body: body,
+  };
+
+  if (data) message['data'] = data;
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+}
+
+export function sendPushNotificationForUsers(
+  userIds,
+  title,
+  body,
+  data = undefined
+) {
+  const dbRef = ref(getDatabase(app));
+
+  userIds.forEach(async (uid) => {
+    const tokensRef = child(dbRef, `users/${uid}/pushTokens`);
+
+    const snapshot = await get(tokensRef);
+    const pushTokens = snapshot.val();
+
+    if (pushTokens) {
+      Object.values(pushTokens).forEach((token) => {
+        try {
+          sendPushNotification(token, title, body, data);
+        } catch (error) {
+          console.log('Error when sending push notification', error);
+        }
+      });
+    }
+  });
+}

@@ -10,7 +10,10 @@ import { store } from './store/store';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
-LogBox.ignoreLogs(['AsyncStorage has been extracted from react-native core']);
+LogBox.ignoreLogs([
+  'AsyncStorage has been extracted from react-native core',
+  'Calling getExpoPushTokenAsync without specifying a projectId is deprecated and will',
+]);
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);

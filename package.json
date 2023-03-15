@@ -30,7 +30,9 @@
     "react-native-screens": "~3.20.0",
     "react-navigation-header-buttons": "^10.0.0",
     "react-redux": "^8.0.5",
-    "yup": "^1.0.0"
+    "yup": "^1.0.0",
+    "expo-notifications": "~0.18.1",
+    "expo-device": "~5.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
