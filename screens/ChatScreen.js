@@ -52,9 +52,7 @@ export default function ChatScreen({ navigation, route }) {
   const chatMessages = useSelector((state) => {
     const messages = state.messages.messagesData[chatId];
     if (!messages) return [];
-    return Object.values(messages).sort((x, y) =>
-      y.sentAt.localeCompare(x.sentAt)
-    );
+    return Object.values(messages).sort((x, y) => y.sentAt - x.sentAt);
   });
 
   useLayoutEffect(() => {

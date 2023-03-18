@@ -19,7 +19,7 @@ export default function StarredMessagesScreen({ navigation, route }) {
     if (!messages) return [];
     return Object.values(messages)
       .filter((message) => starredDict[message.key])
-      .sort((x, y) => x.sentAt.localeCompare(y.sentAt));
+      .sort((x, y) => x.sentAt - y.sentAt);
   });
 
   useLayoutEffect(() => {

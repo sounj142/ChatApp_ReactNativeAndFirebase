@@ -11,6 +11,7 @@ import {
   startAt,
   endAt,
   onValue,
+  serverTimestamp,
 } from 'firebase/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { store } from '../store/store';
@@ -32,7 +33,7 @@ export async function createUserInRealtimeDatabase(
     firstName,
     lastName,
     fullNameLowerCase: getFullNameLowerCase(firstName, lastName),
-    createdDate: new Date().toISOString(),
+    createdDate: serverTimestamp(),
   };
   const dbRef = ref(getDatabase(app));
   const userRef = child(dbRef, `users/${userId}`);

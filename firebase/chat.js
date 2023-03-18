@@ -7,6 +7,7 @@ import {
   push,
   ref,
   remove,
+  serverTimestamp,
   set,
   update,
 } from 'firebase/database';
@@ -19,9 +20,9 @@ export async function createChat(loggedInUserId, { users, groupName }) {
   const newChatData = {
     users,
     createdBy: loggedInUserId,
-    createdAt: new Date().toISOString(),
+    createdAt: serverTimestamp(),
     updatedBy: loggedInUserId,
-    updatedAt: new Date().toISOString(),
+    updatedAt: serverTimestamp(),
     groupName: groupName || null,
   };
   const dbRef = ref(getDatabase(app));
@@ -46,7 +47,7 @@ export async function updateChat(
 
   const updateData = {
     updatedBy: loggedInUserId,
-    updatedAt: new Date().toISOString(),
+    updatedAt: serverTimestamp(),
   };
   if (imageUri) updateData.imageUri = imageUri;
   if (groupName) updateData.groupName = groupName;
@@ -85,7 +86,7 @@ async function _removeUserFromChatGroup(chatData, loggedInUser, userToRemove) {
     const newChatData = {
       users: users,
       updatedBy: loggedInUserId,
-      updatedAt: new Date().toISOString(),
+      updatedAt: serverTimestamp(),
     };
     // if owner leave group, assign oner role to the first user.
     if (chatData.createdBy === userToRemoveId) {
@@ -135,7 +136,7 @@ export async function addUsersToGroup(chatData, loggedInUser, usersToAdd) {
   const newChatData = {
     users: users,
     updatedBy: loggedInUserId,
-    updatedAt: new Date().toISOString(),
+    updatedAt: serverTimestamp(),
   };
   await update(chatRef, newChatData);
 
@@ -220,7 +221,7 @@ export async function sendMessage(
 
   const messageData = {
     sentBy: senderId,
-    sentAt: new Date().toISOString(),
+    sentAt: serverTimestamp(),
     text: text ?? null,
     imageUri: imageUri ?? null,
     replyTo: replyTo ?? null,
@@ -231,7 +232,7 @@ export async function sendMessage(
   const chatRef = child(dbRef, `chats/${chatId}`);
   await update(chatRef, {
     updatedBy: senderId,
-    updatedAt: new Date().toISOString(),
+    updatedAt: serverTimestamp(),
     lastestMessageText: text,
   });
 }
@@ -250,7 +251,7 @@ export async function toggleStarMessage(userId, chatId, messageId) {
     const starData = {
       chatId,
       messageId,
-      starredAt: new Date().toISOString(),
+      starredAt: serverTimestamp(),
     };
     await set(starRef, starData);
   }

@@ -13,8 +13,8 @@ export default function ChatListScreen({ navigation }) {
   const userData = useSelector((state) => state.auth.userData);
   const storedUsers = useSelector((state) => state.users.storedUsers);
   const userChats = useSelector((state) =>
-    Object.values(state.chats.chatsData).sort((x, y) =>
-      y.updatedAt.localeCompare(x.updatedAt)
+    Object.values(state.chats.chatsData).sort(
+      (x, y) => y.updatedAt - x.updatedAt
     )
   );
 
